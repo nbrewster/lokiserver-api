@@ -1,0 +1,1113 @@
+HOST: http://lokiserver.apiary.io/loki
+
+--- Loki Server ---
+
+---
+Documentation for the Loki Server REST API.
+
+Below is (work in progress) documentation describing the the Loki 3.0 API.
+
+#General
+
+At this time, the application/hal+json content type is supported in request and response bodies.
+[TODO: add references / explanations of HAL]
+
+**Note: all referencese to <code>lokiserver.apiary.io</code> are for example purposes only. In a deployed Loki Server
+these will be references to the Loki REST API host.**
+
+**TBD: add HAL notes. Note (at least initially) in the response bodies, _links.self.href matches
+the URI submitted by the client, including any query parameters.**
+
+## URI Templates
+Refer to https://tools.ietf.org/html/rfc6570 for details on URI Templates. Not that Loki REST
+uses reserved characters (i.e. ":") in some URI Template variables, thus the request templates
+use the "{+id}" format - see additional detail at https://tools.ietf.org/html/rfc6570#section-3.2.3.
+
+## Collections
+Unless otherwise noted, Collection resources support standard REST request methods:
+
+<dl>
+<dt>HEAD
+<dd>Retrieve resource metadata without retrieving the representation.
+ Common response codes:
+<ul>
+<li>204 No Content: Resource exists. No body (no representation) is returned.
+<li>404 Not Found: Resource does not exist.
+</ul>
+<dt>GET
+<dd>Retrieve a representation of a resource. There are two standard forms of GET:
+<ul>
+<li>GET on a specific resource {id} (given the resource's URI).
+<li>GET on the Collection, with query parameters. You can query for exact matches
+on any of the core parameters, as well as any extension parameters supported by the
+network elements configured in the system. Note that if appropriate, the Collection
+may include a search Controller (described in the individual sections below) to support complex searches.
+</ul>
+Common response codes:
+<ul>
+<li>200 OK: Resource exists; response body contains representation.
+<li>204 No Content: Resource exists; there is no body (no representation) to be returned.
+<li>404 Not Found: Resource does not exist.
+</ul>
+<dt>POST
+<dd>Create a new resource in the Collection. Also used in special cases to invoke controller resources. Common response codes:
+<ul>
+<li>201 Created: Resource created. URI of the created Resource is returned in the Location headder and the "url" element in the response body.
+<li>400 Bad Request: Request is not valid (e.g. missing required paramterer, invalid values, etc).
+<li>409 Conflict: A resource with an identical key (which may be a composite key combining several parameters) already exists. Response body will include a link to the URI of the existing resource.
+</ul>
+<dt>PUT
+<dd>Update an existing Resource in the Collection. Any key fields (those which comprise the key which uniquely identifies a resource)
+are immutable (may not be changed). See the documentation for each resource for the list of keys. Common response codes:
+<ul>
+<li>200 OK: Resource successfully updated.
+<li>400 Bad Reqkuest: Request is not valid (e.g. invalid values, etc).
+<li>403 Forbidden: Update is not allowed (e.g. attempt to update a read-only field).
+<li>404 Not Found: resource does not exist
+</ul>
+<dt>DELETE
+<dd>Delete a resource. Common response codes:
+<ul>
+<li>204 No Content: Resource successfully deleted
+<li>404 Not Found: Resource does not exist
+</ul>
+<dt>OPTIONS
+<dd>Fetch resource metadata, including the list of allowed methods. Common response codes:
+<ul>
+<li>[future] 200 OK: Resource exists. Accept header lists allowed request methods. Response body may provide additional information.
+<li>204 No Content: Resource exists. Accept header lists allowed request methods.
+<li>404 Not Found: Resource does not exist.
+</dl>
+---
+
+--
+Number Translations
+##Collection
+
+Supported network elements:
+
+* Sonus PSX
+
+Loki must have at least one Network Element configured with support for Number Translations (e.g. Sonus PSX).
+
+Loki must be configured to select the appropriate Network Element for new Number Translations
+(by default, the first configured Network Element with Number Translations support will be used).
+
+See the Loki documentation appropriate to the configured Network Element for mappings to 3rd-party API fields and
+references to 3rd-party documentation.
+
+Keys:
+
+* sourceDn
+
+Extension Keys:
+
+* attributes
+* callProcessingElement1Id
+* callProcessingElement2Id
+* callProcessingElement3Id
+* callProcessingElement4Id
+* callProcessingElementType
+
+[pending: per-parameter descriptions - pending an apiary.io upgrade]
+
+[pending: per-parameter schema/validation information - pending an apiary.io upgrade]
+--
+
+Create a new Number Translation.
+POST /number-translations
+> Content-Type: application/json
+{
+    "sourceDn" : "+1-8665554321",
+    "translatedDn" : "+1-5553043000",
+    "extensions" : {
+        "sonusPsx" : {
+            "attributes" : 0,
+            "callProcessingElement1Id" : "978",
+            "callProcessingElement2Id" : null,
+            "callProcessingElement3Id" : null,
+            "callProcessingElement4Id" : null,    
+            "callProcessingElementType" : 5,
+            "servicesProvisioned" : 0,
+            "phoneType" : 1,
+            "suspendedFlag" : 0,
+            "directTranslationFlag" : 0,
+            "translationLabelId" : null,
+            "translatedCarrierId" : null,
+            "translatedCalltype" : 0,
+            "translatedNpi" : 0,
+            "translatedNoa" : 13,
+            "useTranslationProfile" : 0,
+            "translationProfileId" : null,
+        },
+    },
+}
+< 201
+< Location: http://lokiserver.apiary.io/loki/number-translations/3%3A%252B1-8665554321%3A1%3A0%3A978%3A%3A%3A%3A5
+< Transaction-Id: 1380080943120
++++++
+< 409
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/number-translations"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        },
+    ],
+    "_embedded" : {
+        "ls:number-translations" : {
+            "_links" : {
+                "self" : {
+                    "href" : "http://lokiserver.apiary.io/loki/number-translations/3%3A%252B1-8665554321%3A1%3A0%3A978%3A%3A%3A%3A5"
+                },
+            }
+            "sourceDn" : "+1-8665554321",
+            "translatedDn" : "+1-5553043210",
+            "extensions" : {
+                "sonusPsx" : {
+                    "attributes" : 0,
+                    "callProcessingElement1Id" : "978",
+                    "callProcessingElement2Id" : null,
+                    "callProcessingElement3Id" : null,
+                    "callProcessingElement4Id" : null,    
+                    "callProcessingElementType" : 5,
+                    "servicesProvisioned" : 1,
+                    "phoneType" : 0,
+                    "suspendedFlag" : 0,
+                    "directTranslationFlag" : 0,
+                    "translationLabelId" : null,
+                    "translatedCarrierId" : null,
+                    "translatedCalltype" : 0,
+                    "translatedNpi" : 0,
+                    "translatedNoa" : 12,
+                    "useTranslationProfile" : 0,
+                    "translationProfileId" : null,
+                },
+            },
+        },
+    },
+}
++++++
+< 500
+< Transaction-Id: 1380080943120
+{
+    "errorCode" : "**tbd",
+    "summary" : "Internal Error",
+    "detail" : "[detail here]"
+}
+
+Retrieve an individual number translation.
+**NOT IMPLEMENTED**
+
+GET /DONOTUSE/number-translations/{+id}
+< 200
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/number-translations/3%3A%252B1-8665554321%3A1%3A0%3A978%3A%3A%3A%3A5"
+        },
+    },
+    "sourceDn" : "+1-8665554321",
+    "translatedDn" : "+1-5553043000",
+    "extensions" : {
+        "sonusPsx" : {
+            "attributes" : 0,
+            "callProcessingElement1Id" : "978",
+            "callProcessingElement2Id" : null,
+            "callProcessingElement3Id" : null,
+            "callProcessingElement4Id" : null,    
+            "callProcessingElementType" : 5,
+            "servicesProvisioned" : 0,
+            "phoneType" : 1,
+            "suspendedFlag" : 0,
+            "directTranslationFlag" : 0,
+            "translationLabelId" : null,
+            "translatedCarrierId" : null,
+            "translatedCalltype" : 0,
+            "translatedNpi" : 0,
+            "translatedNoa" : 13,
+            "useTranslationProfile" : 0,
+            "translationProfileId" : null,
+        },
+    },
+}
+
+
+Query number translations. Responses will include (at a minimum) they fields comprising the unique key for the resource.
+
+[future: pagination of results via offset and max; field parameter to specify included/excluded fields]
+
+[future: enhance to include all parameters, not just the key and the full uri? means larger response body,
+but also means the client doesn't have to follow with a get /loki/number-translations/{+id} if they want the full resource
+representation.]
+
+##Supported Query Parameters
+
+<table border=1>
+    <thead>
+    <th>Parameter</th>
+    <th>Required?</th>
+    <th>Type</th>
+    <th>Mode</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>sourceDn</td>
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>core</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+            <td>attributes</td>
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>extension</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+            <td>callProcessingElement1Id</td>
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>extension</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+            <td>callProcessingElement2Id</td>
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>extension</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+            <td>callProcessingElement3Id</td>
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>extension</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+            <td>callProcessingElement4Id</td>
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>extension</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+            <td>callProcessingElementType</td>
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>extension</td>
+            <td>Equal To</td>
+        </tr>
+    </tbody>
+</table>
+GET /number-translations{?sourceDn,attributes,callProcessingElement1Id,callProcessingElement2Id,callProcessingElement3Id,callProcessingElement4Id,callProcessingElementType}
+< 200
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/number-translations?sourceDn=%2B1-8665554321&attributes=0&callProcessingElement1Id=978&callProcessingElement2Id=&callProcessingElement3Id=&callProcessingElement4Id=&callProcessingElementType=5"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        },
+    ],
+    "_embedded" : {
+        "ls:number-translations" : [
+            {
+                "_links" : {
+                    "self" : {
+                        "href" : "http://lokiserver.apiary.io/loki/number-translations/3%3A%252B1-8665554321%3A1%3A0%3A978%3A%3A%3A%3A5"
+                    },
+                },
+                "sourceDn" : "+1-8665554321",
+                "translatedDn" : "+1-5553043000",
+                "extensions" : {
+                    "sonusPsx" : {
+                        "attributes" : 0,
+                        "callProcessingElement1Id" : "978",
+                        "callProcessingElement2Id" : null,
+                        "callProcessingElement3Id" : null,
+                        "callProcessingElement4Id" : null,
+                        "callProcessingElementType" : 5,
+                        "servicesProvisioned" : 0,
+                        "phoneType" : 1,
+                        "suspendedFlag" : 0,
+                        "directTranslationFlag" : 0,
+                        "translationLabelId" : null,
+                        "translatedCarrierId" : null,
+                        "translatedCalltype" : 0,
+                        "translatedNpi" : 0,
+                        "translatedNoa" : 13,
+                        "useTranslationProfile" : 0,
+                        "translationProfileId" : null,
+                    },
+                },
+            },
+        ],
+    },
+}
+
+
+Search number translations. [details pending. This request will allow for complex searches]
+
+[future: pagination of results via offset and max]
+
+**NOT IMPLEMENTED**
+
+POST /DONOTUSE/number-translations/search
+> Content-Type: application/json
+{
+        "TBD" : "tbd"
+}
+< 200
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "numberTranslations" : [
+        {
+            "TBD" : "tbd"
+        }
+    ]
+}
+
+
+Update a number translation.
+PUT /number-translations/{+id}
+> Content-Type: application/json
+{
+    "translatedDn" : "+1-5553043000",
+    "extensions" : {
+        "sonusPsx" : {
+            "servicesProvisioned" : 0,
+            "phoneType" : 1,
+            "suspendedFlag" : 0,
+            "directTranslationFlag" : 0,
+            "translationLabelId" : null,
+            "translatedCarrierId" : null,
+            "translatedCalltype" : 0,
+            "translatedNpi" : 0,
+            "translatedNoa" : 13,
+            "useTranslationProfile" : 0,
+            "translationProfileId" : null,
+        },
+    },
+}
+< 204
+< Transaction-Id: 1380080943120
+
+
+Delete a number translation.
+DELETE /number-translations/{+id}
+< 204
+< Transaction-Id: 1380080943120
+
+
+--
+Subscribers
+##Collection
+
+Supported network elements:
+
+* Sonus PSX
+
+Keys:
+
+* subscriberDn
+
+Extension Keys:
+
+* owningCarrierId
+--
+
+Create a new Subscriber.
+POST /subscribers
+> Content-Type: application/json
+{
+    "subscriberDn" : "+1-2005553001",
+    "extensions" : {
+        "sonusPsx" : {
+            "owningCarrierId" : "16",
+            "businessGroupId" : null,
+            "interLataCarrierId" : "5000",
+            "intraLataCarrierId" : "5000",
+            "intlCarrierId" : "5000",
+            "assignedCarrierId" : null,
+            "presentationFlag" : 0,
+            "prfdPacketServiceProfileId" : null,
+            "optionType" : 0,
+            "testSubscriber" : 0,
+            "billingPlanId" : "EXAMPLE_PLAN",
+            "localCarrierId" : "5000",
+            "authcodeScriptId" : "EXAMPLE_SCRIPT",
+            "elementAttributes" : 0,
+            "classOfServiceId" : "EXAMPLE_COS",
+            "pseudoCarrierId" : null,
+            "infoDigitId" : null,
+            "scpBusinessServiceGroup" : 0,
+            "authcodeGroupId" : null,
+            "pinDigits" : null,
+            "svcList1" : 0,
+            "svcList2" : 0,
+            "exceptionProfileId" : "EXAMPLE_PROFILE",
+            "isDestination" : 1,
+            "defaultCpc" : null,
+            "homeMobileNetwork" : 0,
+            "origEntityRoutingProfileId" : "EXAMPLE_RTGPROFILE",
+            "callingArea" : "555_EXAMPLE",
+            "businessUnitId" : null,
+            "deviceProfileId" : null,
+            "memberStatus" : -1
+        },
+    },
+}
+< 201
+< Location: http://lokiserver.apiary.io/loki/subscribers/1%3A2005553001%3A1%3A16
+< Transaction-Id: 1380080943120
++++++
+< 409
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/subscribers"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        },
+    ],
+    "_embedded" : {
+        "ls:subscribers" : {
+            "_links" : {
+                "self" : {
+                    "href" : "http://lokiserver.apiary.io/loki/subscribers/1%3A2005553001%3A1%3A16"
+                },
+            },
+            "subscriberDn" : "+1-2005553001",
+            "extensions" : {
+                "sonusPsx" : {
+                    "owningCarrierId" : "16",
+                    "businessGroupId" : null,
+                    "interLataCarrierId" : "0000",
+                    "intraLataCarrierId" : "0000",
+                    "intlCarrierId" : "0000",
+                    "assignedCarrierId" : null,
+                    "presentationFlag" : 0,
+                    "prfdPacketServiceProfileId" : null,
+                    "optionType" : 0,
+                    "testSubscriber" : 0,
+                    "billingPlanId" : "EXAMPLE_ANOTHER",
+                    "localCarrierId" : "0000",
+                    "authcodeScriptId" : "EXAMPLE_ANOTHER",
+                    "elementAttributes" : 0,
+                    "classOfServiceId" : "EXAMPLE_ANOTHER",
+                    "pseudoCarrierId" : null,
+                    "infoDigitId" : null,
+                    "scpBusinessServiceGroup" : 0,
+                    "authcodeGroupId" : null,
+                    "pinDigits" : null,
+                    "svcList1" : 0,
+                    "svcList2" : 0,
+                    "exceptionProfileId" : "EXAMPLE_ANOTHER",
+                    "isDestination" : 1,
+                    "defaultCpc" : null,
+                    "homeMobileNetwork" : 0,
+                    "origEntityRoutingProfileId" : "EXAMPLE_ANOTHER",
+                    "callingArea" : "555_ANOTHER",
+                    "businessUnitId" : null,
+                    "deviceProfileId" : null,
+                    "memberStatus" : -1
+                },
+            },
+        },
+    },
+}
++++++
+< 500
+< Transaction-Id: 1380080943120
+{
+    "errorCode" : "**tbd",
+    "summary" : "**tbd Internal Error",
+    "detail" : "[detail here]"
+}
+
+Query Subscribers. Responses will include (at a minimum) they fields comprising the unique key for the resource.
+
+##Supported Query Parameters
+
+<table border=1>
+    <thead>
+    <th>Parameter</th>
+    <th>Required?</th>
+    <th>Mode</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>subscriberDn</td>
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+            <td>owningCarrierId</td>
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+    </tbody>
+</table>
+GET /subscribers{?subscriberDn,owningCarrierId}
+< 200
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/subscribers?subscriberDn=%2B1-2005553001&owningCarrierId=16"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        },
+    ],
+    "_embedded" : {
+        "ls:subscribers" : [
+            {
+                "_links" : {
+                    "self" : {
+                        "href" : "http://lokiserver.apiary.io/loki/subscribers/1%3A2005553001%3A1%3A16"
+                    },
+                },
+                "subscriberDn" : "+1-2005553001",
+                "extensions" : {
+                    "sonusPsx" : {
+                        "owningCarrierId" : "16",
+                        "businessGroupId" : null,
+                        "interLataCarrierId" : "5000",
+                        "intraLataCarrierId" : "5000",
+                        "intlCarrierId" : "5000",
+                        "assignedCarrierId" : null,
+                        "presentationFlag" : 0,
+                        "prfdPacketServiceProfileId" : null,
+                        "optionType" : 0,
+                        "testSubscriber" : 0,
+                        "billingPlanId" : "EXAMPLE_PLAN",
+                        "localCarrierId" : "5000",
+                        "authcodeScriptId" : "EXAMPLE_SCRIPT",
+                        "elementAttributes" : 0,
+                        "classOfServiceId" : "EXAMPLE_COS",
+                        "pseudoCarrierId" : null,
+                        "infoDigitId" : null,
+                        "scpBusinessServiceGroup" : 0,
+                        "authcodeGroupId" : null,
+                        "pinDigits" : null,
+                        "svcList1" : 0,
+                        "svcList2" : 0,
+                        "exceptionProfileId" : "EXAMPLE_PROFILE",
+                        "isDestination" : 1,
+                        "defaultCpc" : null,
+                        "homeMobileNetwork" : 0,
+                        "origEntityRoutingProfileId" : "EXAMPLE_RTGPROFILE",
+                        "callingArea" : "555_EXAMPLE",
+                        "businessUnitId" : null,
+                        "deviceProfileId" : null,
+                        "memberStatus" : -1
+                    },
+                },
+            },
+        ],
+    },
+}
+
+
+--
+Destinations
+##Collection
+
+Supported network elements:
+
+* Sonus PSX
+
+Keys:
+
+* destinationDn
+
+Extension Keys:
+
+* (none)
+--
+
+Create a new Destination.
+POST /destinations
+> Content-Type: application/json
+{
+    "destinationDn" : "+1-2005553001",
+    "extensions" : {
+        "sonusPsx" : {
+            "destSvcScriptId" : null,
+            "customScriptId" : null,
+            "elementAttributes" : 0,
+            "prfdPacketServiceProfileId" : null,
+            "routingLabelId" : "EXAMPLE_RTNG_LBL",
+            "isSubscriber" : 1,
+            "portedType" : 0,
+            "lnpTransitionFlag" : 0,
+            "homeGateway" : "EXAMPLE_GW",
+            "exceptionProfileId" : null,
+            "businessGroupId" : null,
+            "businessUnitId" : null
+        },
+    },
+}
+< 201
+< Location: http://lokiserver.apiary.io/loki/destinations/1%3A2005553001%3A1
+< Transaction-Id: 1380080943120
++++++
+< 409
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/destinations"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        },
+    ],
+    "_embedded" : {
+        "ls:destinations" : {
+            "_links" : {
+                "self" : {
+                    "href" : "http://lokiserver.apiary.io/loki/destinations/1%3A2005553001%3A1"
+                },
+            },
+            "destinationDn" : "+1-2005553001",
+            "extensions" : {
+                "sonusPsx" : {
+                    "destSvcScriptId" : null,
+                    "customScriptId" : null,
+                    "elementAttributes" : 0,
+                    "prfdPacketServiceProfileId" : null,
+                    "routingLabelId" : "EXAMPLE_RTNG_LBL",
+                    "isSubscriber" : 1,
+                    "portedType" : 0,
+                    "lnpTransitionFlag" : 0,
+                    "homeGateway" : "EXAMPLE_GW",
+                    "exceptionProfileId" : null,
+                    "businessGroupId" : null,
+                    "businessUnitId" : null
+                },
+            },
+        },
+    },
+}
++++++
+< 500
+< Transaction-Id: 1380080943120
+{
+    "errorCode" : "**tbd",
+    "summary" : "**tbd Internal Error",
+    "detail" : "[detail here]"
+}
+
+Query Destinations. Responses will include (at a minimum) they fields comprising the unique key for the resource.
+
+##Supported Query Parameters
+
+<table border=1>
+    <thead>
+    <th>Parameter</th>
+    <th>Required?</th>
+    <th>Mode</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>destinationDn</td>
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+    </tbody>
+</table>
+GET /destinations{?destinationDn}
+< 200
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/destinations?destinationDn=%2B1-2005553001"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        },
+    ],
+    "_embedded" : {
+        "ls:destinations" : [
+            {
+                "_links" : {
+                    "self" : {
+                        "href" : "http://lokiserver.apiary.io/loki/destinations/1%3A2005553001%3A1"
+                    },
+                },
+               "destinationDn" : "+1-2005553001",
+                "extensions" : {
+                    "sonusPsx" : {
+                        "destSvcScriptId" : null,
+                        "customScriptId" : null,
+                        "elementAttributes" : 0,
+                        "prfdPacketServiceProfileId" : null,
+                        "routingLabelId" : "ANOTHER_RTNG_LBL",
+                        "isSubscriber" : 0,
+                        "portedType" : 0,
+                        "lnpTransitionFlag" : 0,
+                        "homeGateway" : "ANOTHER_GW",
+                        "exceptionProfileId" : null,
+                        "businessGroupId" : null,
+                        "businessUnitId" : null
+                    },
+                },
+            },
+        ],
+    },
+}
+
+
+--
+Routes
+##Collection
+
+Supported network elements:
+
+* Sonus PSX
+
+Keys:
+
+* destinationDn
+
+Extension Keys:
+
+* callProcessingElement1Id
+* callProcessingElement2Id
+* callProcessingElement3Id
+* callProcessingElement4Id
+* callProcessingElementType
+* routingType
+* partitionId
+* calltype
+* transmissionMedium
+* userCallType
+* digitType
+* timeRangeProfileId
+* callParamFilterProfileId
+* domainName
+--
+
+Create a new Route.
+POST /routes
+> Content-Type: application/json
+{
+    "destinationDn" : "+1-2005553001",
+    "extensions" : {
+        "sonusPsx" : {
+	        "callProcessingElement1Id" : null,
+	        "callProcessingElement2Id" : null,
+	        "callProcessingElement3Id" : null,
+	        "callProcessingElement4Id" : null,
+	        "callProcessingElementType" : 0,
+	        "routingType" : 3,
+	        "partitionId" : "EXAMPLE_PARTITION",
+	        "calltype" : 0,
+	        "transmissionMedium" : "0",
+	        "userCallType" : 0,
+	        "digitType" : 2147483647,
+	        "timeRangeProfileId" : "ALL",
+	        "callParamFilterProfileId" : null,
+	        "domainName" : null
+	        "routingLabelId" : "EXAMPLE_RTNG_LBL"
+        },
+    },
+}
+< 201
+< Location: http://lokiserver.apiary.io/loki/routes/1%3A%3A%3A%3A%3A0%3A3%3A2005553001%3A1%3AEXAMPLE_PARTITION%3A0%3A0%3A0%3A2147483647%3AALL%3A%3A%3AEXAMPLE_RTNG_LBL
+< Transaction-Id: 1380080943120
++++++
+< 409
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/routes"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        },
+    ],
+    "_embedded" : {
+        "ls:routes" : {
+            "_links" : {
+                "self" : {
+                    "href" : "http://lokiserver.apiary.io/loki/routes/1%3A%3A%3A%3A%3A0%3A3%3A2005553001%3A1%3AEXAMPLE_PARTITION%3A0%3A0%3A0%3A2147483647%3AALL%3A%3A%3AEXAMPLE_RTNG_LBL"
+                },
+            },
+            "destinationDn" : "+1-2005553001",
+            "extensions" : {
+                "sonusPsx" : {
+	                "callProcessingElement1Id" : null,
+	                "callProcessingElement2Id" : null,
+	                "callProcessingElement3Id" : null,
+	                "callProcessingElement4Id" : null,
+	                "callProcessingElementType" : 0,
+	                "routingType" : 3,
+	                "partitionId" : "EXAMPLE_PARTITION",
+	                "calltype" : 0,
+	                "transmissionMedium" : "0",
+	                "userCallType" : 0,
+	                "digitType" : 2147483647,
+	                "timeRangeProfileId" : "ALL",
+	                "callParamFilterProfileId" : null,
+	                "domainName" : null
+	                "routingLabelId" : "ANOTHER_RTNG_LBL"
+                },
+            },
+        },
+    },
+}
++++++
+< 500
+< Transaction-Id: 1380080943120
+{
+    "errorCode" : "**tbd",
+    "summary" : "**tbd Internal Error",
+    "detail" : "[detail here]"
+}
+
+Query Routes. Responses will include (at a minimum) they fields comprising the unique key for the resource.
+
+##Supported Query Parameters
+
+<table border=1>
+    <thead>
+    <th>Parameter</th>
+    <th>Required?</th>
+    <th>Mode</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>destinationDn</td>
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+			<td>callProcessingElement1Id
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+			<td>callProcessingElement2Id
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+			<td>callProcessingElement3Id
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+			<td>callProcessingElement4Id
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+			<td>callProcessingElementType
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+			<td>routingType
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+			<td>partitionId
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+			<td>calltype
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+			<td>transmissionMedium
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+			<td>userCallType
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+			<td>digitType
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+			<td>timeRangeProfileId
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+			<td>callParamFilterProfileId
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+			<td>domainName
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
+            <td>Equal To</td>
+        </tr>
+    </tbody>
+</table>
+GET /routes{?callProcessingElement1Id,callProcessingElement2Id,...}
+< 200
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/routes?destinationDn=%2B1-2005553001&callProcessingElement1Id=&callProcessingElement2Id=&callProcessingElement3Id=&callProcessingElement4Id=&callProcessingElementType=0&routingType=3&partitionId=EXAMPLE_PARTITION&calltype=0&transmissionMedium=0&userCallType=0&digitType=2147483647&timeRangeProfileId=ALL&callParamFilterProfileId=&domainName="
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        },
+    ],
+    "_embedded" : {
+        "ls:routes" : [
+            {
+                "_links" : {
+                    "self" : {
+                        "href" : "http://lokiserver.apiary.io/loki/routes/1%3A%3A%3A%3A%3A0%3A3%3A2005553001%3A1%3AEXAMPLE_PARTITION%3A0%3A0%3A0%3A2147483647%3AALL%3A%3A%3AEXAMPLE_RTNG_LBL"
+                    },
+                },
+                "destinationDn" : "+1-2005553001",
+                "extensions" : {
+                    "sonusPsx" : {
+	                    "callProcessingElement1Id" : null,
+    	                "callProcessingElement2Id" : null,
+	                    "callProcessingElement3Id" : null,
+	                    "callProcessingElement4Id" : null,
+	                    "callProcessingElementType" : 0,
+	                    "routingType" : 3,
+	                    "partitionId" : "EXAMPLE_PARTITION",
+    	                "calltype" : 0,
+	                    "transmissionMedium" : "0",
+	                    "userCallType" : 0,
+	                    "digitType" : 2147483647,
+	                    "timeRangeProfileId" : "ALL",
+	                    "callParamFilterProfileId" : null,
+    	                "domainName" : null
+	                    "routingLabelId" : "EXAMPLE_RTNG_LBL"
+                    },
+                },
+            },
+        ],
+    },
+}
+
+
+-- JSON Schema Validations --
+
+POST /number-translations
+{ "request" :
+    { "type": "object",
+          "properties": {
+            "sourceDn": { "type": "string", "maxLength" : 48 },
+            "translatedDn": { "type": "string", "maxLength" : 48 }
+          },
+        "required" : ["sourceDn", "translatedDn"]
+    },
+  "response" :
+    { }
+}
+
+PUT /number-translations/{+id}
+{ "request" :
+    { "type": "object",
+          "properties": {
+            "sourceDn": { "disallow": "any" },
+            "translatedDn": { "type": "string", "maxLength" : 48 }
+          }
+    },
+    "response" : { }
+}
+
+POST /subscribers
+{ "request" :
+    { "type": "object",
+          "properties": {
+            "subscriberDn": { "type": "string", "maxLength" : 48 }
+          },
+        "required" : ["subscriberDn"]
+    },
+  "response" :
+    { }
+}
+
+POST /destinations
+{ "request" :
+    { "type": "object",
+          "properties": {
+            "destinationDn": { "type": "string", "maxLength" : 48 }
+          },
+        "required" : ["destinationDn"]
+    },
+  "response" :
+    { }
+}
+
+POST /routes
+{ "request" :
+    { "type": "object",
+          "properties": {
+            "destinationDn": { "type": "string", "maxLength" : 48 }
+          },
+        "required" : ["destinationDn"]
+    },
+  "response" :
+    { }
+}
