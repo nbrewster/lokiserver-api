@@ -1050,6 +1050,238 @@ GET /routes{?callProcessingElement1Id,callProcessingElement2Id,...}
 }
 
 
+--
+VoIP Users
+##Collection
+
+Supported network elements:
+
+* BroadWorks Application Server
+
+Keys:
+
+* userId
+
+Extension Keys:
+
+* (none)
+
+##Properties
+
+Note: See the JSON Schema (**link TBD) for data types, format, length restrictions, etc.
+
+<table border=1>
+    <thead>
+    <th>Property</th>
+    <th>Required?</th>
+    <th>Default</th>
+    <th>Description</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>customerId</td>
+            <td style="text-align: center; font-weight:bold">&#x2713</td>
+            <td></td>
+            <td>ID of the Customer in which the new VoIP User is to be created. In BroadWorks this is an Enterprise or Service Provider.</td>
+        </tr>
+        <tr>
+            <td>siteId</td>
+            <td style="text-align: center; font-weight:bold">&#x2713</td>
+            <td></td>
+            <td>ID of the Site in which the new VoIP User is to be created. In BroadWorks this is a Group.</td>
+        </tr>
+        <tr>
+            <td>userId</td>
+            <td style="text-align: center; font-weight:bold">&#x2717</td>
+            <td>(see Description)</td>
+            <td>Full UserID, including @domain. Will be constructed as [phoneNumber]@[Site default domain] if not provided.<br />
+            Note that in BroadWorks, if the domain matches the BroadWorks system default domain, the BroadWorks
+            userId will not contain an @domain portion. In the Loki Server API, the userId will always include
+            @domain.<td>
+        </tr>
+        <tr>
+            <td>phoneNumber</td>
+            <td style="text-align: center; font-weight:bold">&#x2717;</td>
+            <td></td>
+            <td>Phone Number.<br />Will be assigned on Customer and/or Group if necessary.<br />
+            E.164 formatted, e.g. +1-2005553001 (dash required after country code); or national
+            number only e.g. 2005553001 (no dashes), in which case the default country code will apply.<br />
+</td>
+        </tr>
+        <tr>
+            <td>extension</td>
+            <td style="text-align: center; font-weight:bold">&#x2717;</td>
+            <td>(see Description)</td>
+            <td>Extension. Will be autopopulated if omitted.<b>**TBD logic</b><br />
+            Set to an empty value or <code>null</code> to create a VoIP User with no extension.</td>
+        </tr>
+        <tr>
+            <td>lastName</td>
+            <td style="text-align: center; font-weight:bold">&#x2713</td>
+            <td>(see Description)</td>
+            <td>Last Name. Autopopulated if blank, null, or omitted. <b>**tbd logic</b></td>
+        </tr>
+        <tr>
+            <td>firstName</td>
+            <td style="text-align: center; font-weight:bold">&#x2713</td>
+            <td>(see Description)</td>
+            <td>First Name. Autopopulated if blank, null, or omitted. <b>**tbd logic</b></td>
+        </tr>
+        <tr>
+            <td>email</td>
+            <td style="text-align: center; font-weight:bold">&#x2717</td>
+            <td></td>
+            <td>E-Mail address</td>
+        </tr>
+        <tr>
+            <td>timeZone</td>
+            <td style="text-align: center; font-weight:bold">&#x2717</td>
+            <td>Site's time zone</td>
+            <td>Time Zone expressed as a Zone Name from the
+            <a href="https://www.iana.org/time-zones">IANA Time Zone Database</a>, e.g. "America/New_York".<br />
+            Leave blank to use the Site's time zone.</td>
+        </tr>
+        <tr>
+            <td>sharedDeviceName</td>
+            <td style="text-align: center; font-weight:bold">&#x2717</td>
+            <td></td>
+            <td>Device Name of an <i>existing</i> Site-level Device - for Business Line VoIP User Add.<br />
+            Either sharedDeviceName or trunkGroupName must be present with a non-null value, but not both.</td>
+        </tr>
+        <tr>
+            <td>trunkGroupName</td>
+            <td style="text-align: center; font-weight:bold">&#x2717</td>
+            <td></td>
+            <td>Name of an <i>existing</i> Trunk Group in the Site, to add a VoIP User to a Trunk Group.<br />
+            Either sharedDeviceName or trunkGroupName must be present with a non-null value, but not both.</td>
+        </tr>
+        <tr>
+            <td>servicePacks</td>
+            <td style="text-align: center; font-weight:bold">&#x2717</td>
+            <td></td>
+            <td>List of names of service packs to be assigned to the new VoIP User.<br />
+            <b>The list is ordered **details to be added</b></td>
+        </tr>
+        <tr>
+            <td>services</td>
+            <td style="text-align: center; font-weight:bold">&#x2717</td>
+            <td></td>
+            <td>The set of services to assign to the new VoIP User.<br />
+            Also specifies (optionally) any pre-configuration settings for these services and/or any
+            services assigned via service packs (see servicePacks property).</td>
+        </tr>
+    </tbody>
+</table>
+--
+
+Create a new VoIP User.
+POST /voip-users
+> Content-Type: application/json
+{
+    "customerId" : "exampleCom",
+    "siteId" : "exampleComNorth",
+    "userId" : "2005553001@example.com",
+    "phoneNumber" : "2005553001",
+    "extension" : "3001",
+    "lastName" : "Smith",
+    "firstName" : "John",
+    "email" : "jsmith@example.com",
+    "timeZone" : "America/New_York",
+    "sharedDeviceName" : "exampleComIad001",
+    "trunkGroupName" : null,
+    "servicePacks" : [
+        "Standard",
+        "Executive"
+    ],
+    "services" : {
+        "Authentication" : {
+            "username" : "2005553001@sip.example.com",
+            "password" : "230A4u$#%f"
+        },
+        "Charge Number" : {
+            "phoneNumber" : "2005554321",
+            "useChargeNumberForEnhancedTranslations" : false,
+            "sendChargeNumberToNetwork" : true
+        },
+        "Third Party Voice Mail Support" : {
+            "isActive" : true,
+            "busyRedirectToVoiceMail" : true,
+            "noAnswerRedirectToVoiceMail" : true,
+            "noAnswerNumberOfRings" : 3,
+            "alwaysRedirectToVoiceMail" : false
+        },
+        "Call Forwarding No Answer" : {
+            "isActive" : true,
+            "forwardToPhoneNumber" : "2005553101",
+            "numberOfRings" : 4
+        },
+    },
+}
+< 201
+< Location: http://loki3.apiary.io/loki/voip-users/2%3A2005553001%40example.com
+< Transaction-Id: 1380080943120
+< Content-Type: application/json
+{
+    "phoneNumber" : "+1-2005553001",
+    "extension" : "3001,
+    "CLID" : "+1-2005553001",
+    "userId" : "2005553001@example.com",
+    "portalPassword" : "s8F!,ggo",
+    "passcode" : "24601",
+    "firstName" : "John",
+    "lastName" : "Smith",
+    "sipAuthUsername" : "2005553001@sip.example.com",
+    "sipAuthPassword" : "230A4u$#%f",
+    "trunkGroup" : null
+}
++++++
+< 409
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://loki3.apiary.io/loki/voip-users"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://loki3.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        },
+    ],
+    "_embedded" : {
+        "ls:voip-users" : {
+            "_links" : {
+                "self" : {
+                    "href" : "http://loki3.apiary.io/loki/voip-users/2%3A2005553001%40example.com
+                },
+            },
+            "customerId" : "anotherCom",
+            "siteId" : "anotherCom",
+            "userId" : "2005553001@example.com",
+            "phoneNumber" : "2005553001",
+            "extension" : "3001",
+            "lastName" : "Doe",
+            "firstName" : "Jane",
+            "email" : "jdoe@another.example.com",
+            "timeZone" : "America/New_York",
+            "sharedDeviceName" : null,
+            "trunkGroupName" : "tg004592"
+        },
+    },
+}
++++++
+< 500
+< Transaction-Id: 1380080943120
+{
+    "errorCode" : "**tbd",
+    "summary" : "**tbd Internal Error",
+    "detail" : "[detail here]"
+}
+
+
 -- JSON Schema Validations --
 
 POST /number-translations
