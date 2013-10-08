@@ -1189,10 +1189,13 @@ POST /voip-users
     "timeZone" : "America/New_York",
     "sharedDeviceName" : "exampleComIad001",
     "trunkGroupName" : null,
-    "servicePacks" : [
-        "Standard",
-        "Executive"
-    ],
+    "servicePacks" : {
+        "base" : "Standard",
+        "add-on" : [
+            "Executive"
+        ],
+    },
+    "role" : "Executive".
     "services" : {
         "Authentication" : {
             "username" : "2005553001@sip.example.com",
