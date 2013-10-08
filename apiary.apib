@@ -138,9 +138,9 @@ POST /number-translations
             "translatedNpi" : 0,
             "translatedNoa" : 13,
             "useTranslationProfile" : 0,
-            "translationProfileId" : null,
-        },
-    },
+            "translationProfileId" : null
+        }
+    }
 }
 < 201
 < Location: http://lokiserver.apiary.io/loki/number-translations/3%3A%252B1-8665554321%3A1%3A0%3A978%3A%3A%3A%3A5
@@ -160,15 +160,15 @@ POST /number-translations
             "name" : "ls",
             "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
             "templated" : true
-        },
+        }
     ],
     "_embedded" : {
         "ls:number-translations" : {
             "_links" : {
                 "self" : {
                     "href" : "http://lokiserver.apiary.io/loki/number-translations/3%3A%252B1-8665554321%3A1%3A0%3A978%3A%3A%3A%3A5"
-                },
-            }
+                }
+            },
             "sourceDn" : "+1-8665554321",
             "translatedDn" : "+1-5553043210",
             "extensions" : {
@@ -189,11 +189,11 @@ POST /number-translations
                     "translatedNpi" : 0,
                     "translatedNoa" : 12,
                     "useTranslationProfile" : 0,
-                    "translationProfileId" : null,
-                },
-            },
-        },
-    },
+                    "translationProfileId" : null
+                }
+            }
+        }
+    }
 }
 +++++
 < 500
@@ -215,7 +215,7 @@ GET /DONOTUSE/number-translations/{+id}
     "_links" : {
         "self" : {
             "href" : "http://lokiserver.apiary.io/loki/number-translations/3%3A%252B1-8665554321%3A1%3A0%3A978%3A%3A%3A%3A5"
-        },
+        }
     },
     "sourceDn" : "+1-8665554321",
     "translatedDn" : "+1-5553043000",
@@ -237,9 +237,9 @@ GET /DONOTUSE/number-translations/{+id}
             "translatedNpi" : 0,
             "translatedNoa" : 13,
             "useTranslationProfile" : 0,
-            "translationProfileId" : null,
-        },
-    },
+            "translationProfileId" : null
+        }
+    }
 }
 
 
@@ -320,7 +320,7 @@ GET /number-translations{?sourceDn,attributes,callProcessingElement1Id,callProce
             "name" : "ls",
             "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
             "templated" : true
-        },
+        }
     ],
     "_embedded" : {
         "ls:number-translations" : [
@@ -328,7 +328,7 @@ GET /number-translations{?sourceDn,attributes,callProcessingElement1Id,callProce
                 "_links" : {
                     "self" : {
                         "href" : "http://lokiserver.apiary.io/loki/number-translations/3%3A%252B1-8665554321%3A1%3A0%3A978%3A%3A%3A%3A5"
-                    },
+                    }
                 },
                 "sourceDn" : "+1-8665554321",
                 "translatedDn" : "+1-5553043000",
@@ -350,12 +350,12 @@ GET /number-translations{?sourceDn,attributes,callProcessingElement1Id,callProce
                         "translatedNpi" : 0,
                         "translatedNoa" : 13,
                         "useTranslationProfile" : 0,
-                        "translationProfileId" : null,
-                    },
-                },
-            },
-        ],
-    },
+                        "translationProfileId" : null
+                    }
+                }
+            }
+        ]
+    }
 }
 
 
@@ -399,9 +399,9 @@ PUT /number-translations/{+id}
             "translatedNpi" : 0,
             "translatedNoa" : 13,
             "useTranslationProfile" : 0,
-            "translationProfileId" : null,
-        },
-    },
+            "translationProfileId" : null
+        }
+    }
 }
 < 204
 < Transaction-Id: 1380080943120
@@ -468,8 +468,8 @@ POST /subscribers
             "businessUnitId" : null,
             "deviceProfileId" : null,
             "memberStatus" : -1
-        },
-    },
+        }
+    }
 }
 < 201
 < Location: http://lokiserver.apiary.io/loki/subscribers/1%3A2005553001%3A1%3A16
@@ -489,14 +489,14 @@ POST /subscribers
             "name" : "ls",
             "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
             "templated" : true
-        },
+        }
     ],
     "_embedded" : {
         "ls:subscribers" : {
             "_links" : {
                 "self" : {
                     "href" : "http://lokiserver.apiary.io/loki/subscribers/1%3A2005553001%3A1%3A16"
-                },
+                }
             },
             "subscriberDn" : "+1-2005553001",
             "extensions" : {
@@ -532,10 +532,10 @@ POST /subscribers
                     "businessUnitId" : null,
                     "deviceProfileId" : null,
                     "memberStatus" : -1
-                },
-            },
-        },
-    },
+                }
+            }
+        }
+    }
 }
 +++++
 < 500
@@ -584,7 +584,7 @@ GET /subscribers{?subscriberDn,owningCarrierId}
             "name" : "ls",
             "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
             "templated" : true
-        },
+        }
     ],
     "_embedded" : {
         "ls:subscribers" : [
@@ -592,7 +592,7 @@ GET /subscribers{?subscriberDn,owningCarrierId}
                 "_links" : {
                     "self" : {
                         "href" : "http://lokiserver.apiary.io/loki/subscribers/1%3A2005553001%3A1%3A16"
-                    },
+                    }
                 },
                 "subscriberDn" : "+1-2005553001",
                 "extensions" : {
@@ -628,11 +628,11 @@ GET /subscribers{?subscriberDn,owningCarrierId}
                         "businessUnitId" : null,
                         "deviceProfileId" : null,
                         "memberStatus" : -1
-                    },
-                },
-            },
-        ],
-    },
+                    }
+                }
+            }
+        ]
+    }
 }
 
 
@@ -672,8 +672,8 @@ POST /destinations
             "exceptionProfileId" : null,
             "businessGroupId" : null,
             "businessUnitId" : null
-        },
-    },
+        }
+    }
 }
 < 201
 < Location: http://lokiserver.apiary.io/loki/destinations/1%3A2005553001%3A1
@@ -693,14 +693,14 @@ POST /destinations
             "name" : "ls",
             "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
             "templated" : true
-        },
+        }
     ],
     "_embedded" : {
         "ls:destinations" : {
             "_links" : {
                 "self" : {
                     "href" : "http://lokiserver.apiary.io/loki/destinations/1%3A2005553001%3A1"
-                },
+                }
             },
             "destinationDn" : "+1-2005553001",
             "extensions" : {
@@ -717,10 +717,10 @@ POST /destinations
                     "exceptionProfileId" : null,
                     "businessGroupId" : null,
                     "businessUnitId" : null
-                },
-            },
-        },
-    },
+                }
+            }
+        }
+    }
 }
 +++++
 < 500
@@ -764,7 +764,7 @@ GET /destinations{?destinationDn}
             "name" : "ls",
             "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
             "templated" : true
-        },
+        }
     ],
     "_embedded" : {
         "ls:destinations" : [
@@ -772,7 +772,7 @@ GET /destinations{?destinationDn}
                 "_links" : {
                     "self" : {
                         "href" : "http://lokiserver.apiary.io/loki/destinations/1%3A2005553001%3A1"
-                    },
+                    }
                 },
                "destinationDn" : "+1-2005553001",
                 "extensions" : {
@@ -789,11 +789,11 @@ GET /destinations{?destinationDn}
                         "exceptionProfileId" : null,
                         "businessGroupId" : null,
                         "businessUnitId" : null
-                    },
-                },
-            },
-        ],
-    },
+                    }
+                }
+            }
+        ]
+    }
 }
 
 
@@ -847,10 +847,10 @@ POST /routes
 	        "digitType" : 2147483647,
 	        "timeRangeProfileId" : "ALL",
 	        "callParamFilterProfileId" : null,
-	        "domainName" : null
+	        "domainName" : null.
 	        "routingLabelId" : "EXAMPLE_RTNG_LBL"
-        },
-    },
+        }
+    }
 }
 < 201
 < Location: http://lokiserver.apiary.io/loki/routes/1%3A%3A%3A%3A%3A0%3A3%3A2005553001%3A1%3AEXAMPLE_PARTITION%3A0%3A0%3A0%3A2147483647%3AALL%3A%3A%3AEXAMPLE_RTNG_LBL
@@ -870,14 +870,14 @@ POST /routes
             "name" : "ls",
             "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
             "templated" : true
-        },
+        }
     ],
     "_embedded" : {
         "ls:routes" : {
             "_links" : {
                 "self" : {
                     "href" : "http://lokiserver.apiary.io/loki/routes/1%3A%3A%3A%3A%3A0%3A3%3A2005553001%3A1%3AEXAMPLE_PARTITION%3A0%3A0%3A0%3A2147483647%3AALL%3A%3A%3AEXAMPLE_RTNG_LBL"
-                },
+                }
             },
             "destinationDn" : "+1-2005553001",
             "extensions" : {
@@ -895,12 +895,12 @@ POST /routes
 	                "digitType" : 2147483647,
 	                "timeRangeProfileId" : "ALL",
 	                "callParamFilterProfileId" : null,
-	                "domainName" : null
+	                "domainName" : null,
 	                "routingLabelId" : "ANOTHER_RTNG_LBL"
-                },
-            },
-        },
-    },
+                }
+            }
+        }
+    }
 }
 +++++
 < 500
@@ -1003,51 +1003,51 @@ GET /routes{?callProcessingElement1Id,callProcessingElement2Id,...}
 < 200
 < Content-Type: application/hal+json
 < Transaction-Id: 1380080943120
-{
-    "_links" : {
-        "self" : {
-            "href" : "http://lokiserver.apiary.io/loki/routes?destinationDn=%2B1-2005553001&callProcessingElement1Id=&callProcessingElement2Id=&callProcessingElement3Id=&callProcessingElement4Id=&callProcessingElementType=0&routingType=3&partitionId=EXAMPLE_PARTITION&calltype=0&transmissionMedium=0&userCallType=0&digitType=2147483647&timeRangeProfileId=ALL&callParamFilterProfileId=&domainName="
-        }
-    },
-    "curies" : [
-        {
-            "name" : "ls",
-            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
-            "templated" : true
+    {
+        "_links" : {
+            "self" : {
+                "href" : "http://lokiserver.apiary.io/loki/routes?destinationDn=%2B1-2005553001&callProcessingElement1Id=&callProcessingElement2Id=&callProcessingElement3Id=&callProcessingElement4Id=&callProcessingElementType=0&routingType=3&partitionId=EXAMPLE_PARTITION&calltype=0&transmissionMedium=0&userCallType=0&digitType=2147483647&timeRangeProfileId=ALL&callParamFilterProfileId=&domainName="
+            }
         },
-    ],
-    "_embedded" : {
-        "ls:routes" : [
+        "curies" : [
             {
-                "_links" : {
-                    "self" : {
-                        "href" : "http://lokiserver.apiary.io/loki/routes/1%3A%3A%3A%3A%3A0%3A3%3A2005553001%3A1%3AEXAMPLE_PARTITION%3A0%3A0%3A0%3A2147483647%3AALL%3A%3A%3AEXAMPLE_RTNG_LBL"
-                    },
-                },
-                "destinationDn" : "+1-2005553001",
-                "extensions" : {
-                    "sonusPsx" : {
-	                    "callProcessingElement1Id" : null,
-    	                "callProcessingElement2Id" : null,
-	                    "callProcessingElement3Id" : null,
-	                    "callProcessingElement4Id" : null,
-	                    "callProcessingElementType" : 0,
-	                    "routingType" : 3,
-	                    "partitionId" : "EXAMPLE_PARTITION",
-    	                "calltype" : 0,
-	                    "transmissionMedium" : "0",
-	                    "userCallType" : 0,
-	                    "digitType" : 2147483647,
-	                    "timeRangeProfileId" : "ALL",
-	                    "callParamFilterProfileId" : null,
-    	                "domainName" : null
-	                    "routingLabelId" : "EXAMPLE_RTNG_LBL"
-                    },
-                },
-            },
+                "name" : "ls",
+                "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+                "templated" : true
+            }
         ],
-    },
-}
+        "_embedded" : {
+            "ls:routes" : [
+                {
+                    "_links" : {
+                        "self" : {
+                            "href" : "http://lokiserver.apiary.io/loki/routes/1%3A%3A%3A%3A%3A0%3A3%3A2005553001%3A1%3AEXAMPLE_PARTITION%3A0%3A0%3A0%3A2147483647%3AALL%3A%3A%3AEXAMPLE_RTNG_LBL"
+                        }
+                    },
+                    "destinationDn" : "+1-2005553001",
+                    "extensions" : {
+                        "sonusPsx" : {
+    	                    "callProcessingElement1Id" : null,
+        	                "callProcessingElement2Id" : null,
+    	                    "callProcessingElement3Id" : null,
+    	                    "callProcessingElement4Id" : null,
+    	                    "callProcessingElementType" : 0,
+    	                    "routingType" : 3,
+    	                    "partitionId" : "EXAMPLE_PARTITION",
+        	                "calltype" : 0,
+    	                    "transmissionMedium" : "0",
+    	                    "userCallType" : 0,
+    	                    "digitType" : 2147483647,
+    	                    "timeRangeProfileId" : "ALL",
+    	                    "callParamFilterProfileId" : null,
+        	                "domainName" : null,
+    	                    "routingLabelId" : "EXAMPLE_RTNG_LBL"
+                        }
+                    }
+                }
+            ]
+        }
+    }
 
 
 --
@@ -1193,9 +1193,9 @@ POST /voip-users
         "base" : "Standard",
         "add-on" : [
             "Executive"
-        ],
+        ]
     },
-    "role" : "Executive".
+    "role" : "Executive",
     "services" : {
         "Authentication" : {
             "username" : "2005553001@sip.example.com",
@@ -1217,8 +1217,8 @@ POST /voip-users
             "isActive" : true,
             "forwardToPhoneNumber" : "2005553101",
             "numberOfRings" : 4
-        },
-    },
+        }
+    }
 }
 < 201
 < Location: http://loki3.apiary.io/loki/voip-users/2%3A2005553001%40example.com
@@ -1226,10 +1226,10 @@ POST /voip-users
 < Content-Type: application/json
 {
     "phoneNumber" : "+1-2005553001",
-    "extension" : "3001,
+    "extension" : "3001",
     "CLID" : "+1-2005553001",
     "userId" : "2005553001@example.com",
-    "portalPassword" : "s8F!,ggo",
+    "portalPassword" : "s8F!9ggo",
     "passcode" : "24601",
     "firstName" : "John",
     "lastName" : "Smith",
@@ -1252,14 +1252,14 @@ POST /voip-users
             "name" : "ls",
             "href" : "http://loki3.apiary.io/loki/rels/{rel}",
             "templated" : true
-        },
+        }
     ],
     "_embedded" : {
         "ls:voip-users" : {
             "_links" : {
                 "self" : {
-                    "href" : "http://loki3.apiary.io/loki/voip-users/2%3A2005553001%40example.com
-                },
+                    "href" : "http://loki3.apiary.io/loki/voip-users/2%3A2005553001%40example.com"
+                }
             },
             "customerId" : "anotherCom",
             "siteId" : "anotherCom",
@@ -1272,8 +1272,8 @@ POST /voip-users
             "timeZone" : "America/New_York",
             "sharedDeviceName" : null,
             "trunkGroupName" : "tg004592"
-        },
-    },
+        }
+    }
 }
 +++++
 < 500
