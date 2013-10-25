@@ -357,6 +357,9 @@ GET /number-translations{?sourceDn,attributes,callProcessingElement1Id,callProce
         ]
     }
 }
++++++
+< 404
+< Transaction-Id: 1380080943120
 
 
 Search number translations. [details pending. This request will allow for complex searches]
@@ -410,6 +413,9 @@ PUT /number-translations/{+id}
 Delete a number translation.
 DELETE /number-translations/{+id}
 < 204
+< Transaction-Id: 1380080943120
++++++
+< 404
 < Transaction-Id: 1380080943120
 
 
@@ -634,6 +640,9 @@ GET /subscribers{?subscriberDn,owningCarrierId}
         ]
     }
 }
++++++
+< 404
+< Transaction-Id: 1380080943120
 
 
 --
@@ -795,6 +804,9 @@ GET /destinations{?destinationDn}
         ]
     }
 }
++++++
+< 404
+< Transaction-Id: 1380080943120
 
 
 --
@@ -1003,7 +1015,7 @@ GET /routes{?callProcessingElement1Id,callProcessingElement2Id,...}
 < 200
 < Content-Type: application/hal+json
 < Transaction-Id: 1380080943120
-    {
+{
         "_links" : {
             "self" : {
                 "href" : "http://lokiserver.apiary.io/loki/routes?destinationDn=%2B1-2005553001&callProcessingElement1Id=&callProcessingElement2Id=&callProcessingElement3Id=&callProcessingElement4Id=&callProcessingElementType=0&routingType=3&partitionId=EXAMPLE_PARTITION&calltype=0&transmissionMedium=0&userCallType=0&digitType=2147483647&timeRangeProfileId=ALL&callParamFilterProfileId=&domainName="
@@ -1047,7 +1059,10 @@ GET /routes{?callProcessingElement1Id,callProcessingElement2Id,...}
                 }
             ]
         }
-    }
+}
++++++
+< 404
+< Transaction-Id: 1380080943120
 
 
 --
