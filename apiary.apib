@@ -208,44 +208,6 @@ POST /number-translations
     "detail" : "[detail here]"
 }
 
-Retrieve an individual number translation.
-**NOT IMPLEMENTED**
-
-GET /DONOTUSE/number-translations/{+id}
-< 200
-< Content-Type: application/hal+json
-< Transaction-Id: 1380080943120
-{
-    "_links" : {
-        "self" : {
-            "href" : "http://lokiserver.apiary.io/loki/number-translations/3%3A%252B1-8665554321%3A1%3A0%3A978%3A%3A%3A%3A5"
-        }
-    },
-    "sourceDn" : "+1-8665554321",
-    "translatedDn" : "+1-5553043000",
-    "extensions" : {
-        "sonusPsx" : {
-            "attributes" : 0,
-            "callProcessingElement1Id" : "978",
-            "callProcessingElement2Id" : null,
-            "callProcessingElement3Id" : null,
-            "callProcessingElement4Id" : null,    
-            "callProcessingElementType" : 5,
-            "servicesProvisioned" : 0,
-            "phoneType" : 1,
-            "suspendedFlag" : 0,
-            "directTranslationFlag" : 0,
-            "translationLabelId" : null,
-            "translatedCarrierId" : null,
-            "translatedCalltype" : 0,
-            "translatedNpi" : 0,
-            "translatedNoa" : 13,
-            "useTranslationProfile" : 0,
-            "translationProfileId" : null
-        }
-    }
-}
-
 
 Query number translations. Responses will include (at a minimum) they fields comprising the unique key for the resource.
 
@@ -364,29 +326,6 @@ GET /number-translations{?sourceDn,attributes,callProcessingElement1Id,callProce
 +++++
 < 404
 < Transaction-Id: 1380080943120
-
-
-Search number translations. [details pending. This request will allow for complex searches]
-
-[future: pagination of results via offset and max]
-
-**NOT IMPLEMENTED**
-
-POST /DONOTUSE/number-translations/search
-> Content-Type: application/json
-{
-        "TBD" : "tbd"
-}
-< 200
-< Content-Type: application/hal+json
-< Transaction-Id: 1380080943120
-{
-    "numberTranslations" : [
-        {
-            "TBD" : "tbd"
-        }
-    ]
-}
 
 
 Update a number translation.
