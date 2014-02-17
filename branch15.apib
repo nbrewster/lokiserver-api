@@ -1566,6 +1566,29 @@ POST /customers/{+customerId}/sites/{+siteId}/voip-users
     "detail" : "Request validation failed: phoneNumber does not match pattern^\\+[0-9]+-[0-9]+$: was processing value \"+1-\""
 }
 
+--
+CHANGELOG
+
+#1.5
+Changes for *Functional Description: Sonus Entity and Utility Services - Subscriber, Destination, and Route Modify Support*:
+* Add PUT /loki/{subscribers,destinations,routes}.
+
+Changes for *Functional Description: Sonus Entity and Utility Services - Route Query Enhancements*:
+* Update GET /routes{?...} documentation, supported URL query parameters, and 200 OK response body.
+
+Changes for *Functional Description: VoIP User Create - Configure Call Forwarding Not Reachable (BroadWorks)*:
+* Update POST /loki/customer/{+customerId}/sites/{+siteId}/voip-users request body to add Call Forwarding Not Reachable service.
+
+General:
+* Improve comments.
+* Correct errors in json-schema.
+* Add 404 example for POST /loki/number-translations.
+* Document URL parameters for POST /loki/subscribers.
+* Correct the URI in the Location header in POST /loki/routes 201 Created response, and in embedded ls:routes in 409 Conflict response, and in the 200 OK response to GET /loki/routes{?...}.
+* Further updates to POST /loki/customer/{+customerId}/sites/{+siteId}/voip-users: improve documentation, add timeZone and language; add "+" in URI template parameters to indicate reserved expansion.
+
+--
+
 
 -- JSON Schema Validations --
 
