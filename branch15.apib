@@ -157,7 +157,7 @@ POST /number-translations
     }
 }
 < 201
-< Location: http://lokiserver.apiary.io/loki/number-translations/3%3A1%3A8665554321%3A0%3A978%3A%3A%3A%3A5
+< Location: http://lokiserver.apiary.io/loki/number-translations/3-1-8665554321-0-978----5
 < Transaction-Id: 1380080943120
 +++++
 < 409
@@ -180,9 +180,10 @@ POST /number-translations
         "ls:number-translations" : {
             "_links" : {
                 "self" : {
-                    "href" : "http://lokiserver.apiary.io/loki/number-translations/3%3A1%3A8665554321%3A0%3A978%3A%3A%3A%3A5"
+                    "href" : "http://lokiserver.apiary.io/loki/number-translations/3-1-8665554321-0-978----5"
                 }
             },
+            "id" : "3-1-8665554321-0-978----5",
             "sourceDn" : "+1-8665554321",
             "translatedDn" : "+1-5553043210",
             "extensions" : {
@@ -304,9 +305,10 @@ GET /number-translations{?sourceDn,attributes,callProcessingElement1Id,callProce
             {
                 "_links" : {
                     "self" : {
-                        "href" : "http://lokiserver.apiary.io/loki/number-translations/3%3A1%3A8665554321%3A0%3A978%3A%3A%3A%3A5"
+                        "href" : "http://lokiserver.apiary.io/loki/number-translations/3-1-8665554321-0-978----5"
                     }
                 },
+                "id" : "3-1-8665554321-0-978----5",
                 "sourceDn" : "+1-8665554321",
                 "translatedDn" : "+1-5553043000",
                 "extensions" : {
@@ -404,25 +406,6 @@ Extension Keys:
 
 
 Create a new Subscriber.
-
-##URL Query Parameters
-
-<table border=1>
-    <thead>
-        <th>Parameter</th>
-        <th>Required?</th>
-        <th>Default</th>
-        <th>Description</th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>mode</td>
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>prevalidate-and-create</td>
-            <td>(see general documentation above)</td>
-        </tr>
-    </tbody>
-</table>
 POST /subscribers
 > Content-Type: application/json
 {
@@ -464,7 +447,7 @@ POST /subscribers
     }
 }
 < 201
-< Location: http://lokiserver.apiary.io/loki/subscribers/1%3A2005553001%3A1%3A16
+< Location: http://lokiserver.apiary.io/loki/subscribers/1-2005553001-1-16
 < Transaction-Id: 1380080943120
 +++++
 < 409
@@ -487,9 +470,10 @@ POST /subscribers
         "ls:subscribers" : {
             "_links" : {
                 "self" : {
-                    "href" : "http://lokiserver.apiary.io/loki/subscribers/1%3A2005553001%3A1%3A16"
+                    "href" : "http://lokiserver.apiary.io/loki/subscribers/1-2005553001-1-16"
                 }
             },
+            "id" : "1-2005553001-1-16",
             "subscriberDn" : "+1-2005553001",
             "extensions" : {
                 "sonusPsx" : {
@@ -593,9 +577,10 @@ GET /subscribers{?subscriberDn,owningCarrierId}
             {
                 "_links" : {
                     "self" : {
-                        "href" : "http://lokiserver.apiary.io/loki/subscribers/1%3A2005553001%3A1%3A16"
+                        "href" : "http://lokiserver.apiary.io/loki/subscribers/1-2005553001-1-16"
                     }
                 },
+                "id" : "1-2005553001-1-16",
                 "subscriberDn" : "+1-2005553001",
                 "extensions" : {
                     "sonusPsx" : {
@@ -745,7 +730,7 @@ POST /destinations
     }
 }
 < 201
-< Location: http://lokiserver.apiary.io/loki/destinations/1%3A2005553001%3A1
+< Location: http://lokiserver.apiary.io/loki/destinations/1-2005553001-1
 < Transaction-Id: 1380080943120
 +++++
 < 409
@@ -768,9 +753,10 @@ POST /destinations
         "ls:destinations" : {
             "_links" : {
                 "self" : {
-                    "href" : "http://lokiserver.apiary.io/loki/destinations/1%3A2005553001%3A1"
+                    "href" : "http://lokiserver.apiary.io/loki/destinations/1-2005553001-1"
                 }
             },
+            "id" : "1-2005553001-1",
             "destinationDn" : "+1-2005553001",
             "extensions" : {
                 "sonusPsx" : {
@@ -850,10 +836,11 @@ GET /destinations{?destinationDn}
             {
                 "_links" : {
                     "self" : {
-                        "href" : "http://lokiserver.apiary.io/loki/destinations/1%3A2005553001%3A1"
+                        "href" : "http://lokiserver.apiary.io/loki/destinations/1-2005553001-1"
                     }
                 },
-               "destinationDn" : "+1-2005553001",
+                "id" : "1-2005553001-1",
+                "destinationDn" : "+1-2005553001",
                 "extensions" : {
                     "sonusPsx" : {
                         "destSvcScriptId" : null,
@@ -981,7 +968,7 @@ POST /routes
     }
 }
 < 201
-< Location: http://lokiserver.apiary.io/loki/routes/1%3A%3A%3A%3A%3A0%3A3%3A2005553001%3A1%3AEXAMPLE_PARTITION%3A0%3A0%3A0%3A2147483647%3AALL%3A%3A
+< Location: http://lokiserver.apiary.io/loki/routes/1-----0-3-2005553001-1-EXAMPLE_PARTITION-0-0-0-2147483647-ALL--
 < Transaction-Id: 1380080943120
 +++++
 < 409
@@ -1004,9 +991,10 @@ POST /routes
         "ls:routes" : {
             "_links" : {
                 "self" : {
-                    "href" : "http://lokiserver.apiary.io/loki/routes/1%3A%3A%3A%3A%3A0%3A3%3A2005553001%3A1%3AEXAMPLE_PARTITION%3A0%3A0%3A0%3A2147483647%3AALL%3A%3A"
+                    "href" : "http://lokiserver.apiary.io/loki/routes/1-----0-3-2005553001-1-EXAMPLE_PARTITION-0-0-0-2147483647-ALL--"
                 }
             },
+            "id" : "1-----0-3-2005553001-1-EXAMPLE_PARTITION-0-0-0-2147483647-ALL--",
             "destinationDn" : "+1-2005553001",
             "extensions" : {
                 "sonusPsx" : {
@@ -1115,9 +1103,10 @@ GET /routes{?...}
                 {
                     "_links" : {
                         "self" : {
-                            "href" : "http://lokiserver.apiary.io/loki/routes/1%3A%3A%3A%3A%3A0%3A3%3A2005553001%3A1%3AEXAMPLE_PARTITION%3A0%3A0%3A0%3A2147483647%3AALL%3A%3A"
+                            "href" : "http://lokiserver.apiary.io/loki/routes/1-----0-3-2005553001-1-EXAMPLE_PARTITION-0-0-0-2147483647-ALL--"
                         }
                     },
+                    "id" : "1-----0-3-2005553001-1-EXAMPLE_PARTITION-0-0-0-2147483647-ALL--",
                     "destinationDn" : "+1-2005553001",
                     "extensions" : {
                         "sonusPsx" : {
@@ -1142,9 +1131,10 @@ GET /routes{?...}
                 {
                     "_links" : {
                         "self" : {
-                            "href" : "http://lokiserver.apiary.io/loki/routes/1%3A4%3A%3A%3A%3A0%3A3%3A2005553001%3A1%3ANOTHER_PARTITION%3A0%3A0%3A0%3A2147483647%3AALL%3A%3A"
+                            "href" : "http://lokiserver.apiary.io/loki/routes/1-4----0-3-2005553001-1-ANOTHER_PARTITION-0-0-0-2147483647-ALL--"
                         }
                     },
+                    "id" : "1-4----0-3-2005553001-1-ANOTHER_PARTITION-0-0-0-2147483647-ALL--",
                     "destinationDn" : "+1-2005553001",
                     "extensions" : {
                         "sonusPsx" : {
@@ -1513,10 +1503,24 @@ POST /customers/{+customerId}/sites/{+siteId}/voip-users
     }
 }
 < 201
-< Location: http://loki3.apiary.io/loki/customers/exampleCom/sites/exampleComNorth/voip-users/2%3A2005553001%40example.com
+< Location: http://loki3.apiary.io/loki/voip-users/2005553001%40example.com
 < Transaction-Id: 1380080943120
-< Content-Type: application/json
+< Content-Type: application/hal+json
 {
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/voip-users/2005553001%40example.com"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        }
+    ],
+    "customerId" : "Example Com",
+    "siteId" : "Example Com - North",
     "phoneNumber" : "+1-2005553001",
     "extension" : "3001",
     "CLID" : "+1-2005553001",
@@ -1570,6 +1574,11 @@ POST /customers/{+customerId}/sites/{+siteId}/voip-users
 CHANGELOG
 
 #1.5
+Changes for *Functional Description: Alternate API Navigation*:
+* Update URIs (self links, Location headers) to reflect changed URI construction
+* Update response bodies to add new properties required to expand URI Template variables
+* Convert POST /loki/customers/{+customerId}/sites/{+siteId}/voip-users 201 response to hal+json
+
 Changes for *Functional Description: Sonus Entity and Utility Services - Subscriber, Destination, and Route Modify Support*:
 * Add PUT /loki/{subscribers,destinations,routes}.
 
@@ -1577,7 +1586,7 @@ Changes for *Functional Description: Sonus Entity and Utility Services - Route Q
 * Update GET /routes{?...} documentation, supported URL query parameters, and 200 OK response body.
 
 Changes for *Functional Description: VoIP User Create - Configure Call Forwarding Not Reachable (BroadWorks)*:
-* Update POST /loki/customer/{+customerId}/sites/{+siteId}/voip-users request body to add Call Forwarding Not Reachable service.
+* Update POST /loki/customers/{+customerId}/sites/{+siteId}/voip-users request body to add Call Forwarding Not Reachable service.
 
 General:
 * Improve comments.
@@ -1585,7 +1594,7 @@ General:
 * Add 404 example for POST /loki/number-translations.
 * Document URL parameters for POST /loki/subscribers.
 * Correct the URI in the Location header in POST /loki/routes 201 Created response, and in embedded ls:routes in 409 Conflict response, and in the 200 OK response to GET /loki/routes{?...}.
-* Further updates to POST /loki/customer/{+customerId}/sites/{+siteId}/voip-users: improve documentation, add timeZone and language; add "+" in URI template parameters to indicate reserved expansion.
+* Further updates to POST /loki/customers/{+customerId}/sites/{+siteId}/voip-users: improve documentation, add timeZone and language; add "+" in URI template parameters to indicate reserved expansion.
 
 --
 
