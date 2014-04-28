@@ -16,7 +16,7 @@ Below is (work in progress) documentation describing the the Loki 3.0 API.
 At this time, the application/hal+json content type is supported in request and response bodies.
 [TODO: add references / explanations of HAL]
 
-**Note: all referencese to <code>lokiserver.apiary.io</code> are for example purposes only. In a deployed Loki Server
+**Note: all references to <code>lokiserver.apiary.io</code> are for example purposes only. In a deployed Loki Server
 these will be references to the Loki REST API host.**
 
 **TBD: add HAL notes. Note (at least initially) in the response bodies, _links.self.href matches
@@ -139,7 +139,7 @@ POST /number-translations
             "callProcessingElement1Id" : "978",
             "callProcessingElement2Id" : null,
             "callProcessingElement3Id" : null,
-            "callProcessingElement4Id" : null,    
+            "callProcessingElement4Id" : null,
             "callProcessingElementType" : 5,
             "servicesProvisioned" : 0,
             "phoneType" : 1,
@@ -156,7 +156,7 @@ POST /number-translations
     }
 }
 < 201
-< Location: http://lokiserver.apiary.io/loki/number-translations/3%3A1%3A8665554321%3A0%3A978%3A%3A%3A%3A5
+< Location: http://lokiserver.apiary.io/loki/number-translations/3-1-8665554321-0-978----5
 < Transaction-Id: 1380080943120
 +++++
 < 409
@@ -179,9 +179,10 @@ POST /number-translations
         "ls:number-translations" : {
             "_links" : {
                 "self" : {
-                    "href" : "http://lokiserver.apiary.io/loki/number-translations/3%3A1%3A8665554321%3A0%3A978%3A%3A%3A%3A5"
+                    "href" : "http://lokiserver.apiary.io/loki/number-translations/3-1-8665554321-0-978----5"
                 }
             },
+            "id" : "3-1-8665554321-0-978----5",
             "sourceDn" : "+1-8665554321",
             "translatedDn" : "+1-5553043210",
             "extensions" : {
@@ -190,7 +191,7 @@ POST /number-translations
                     "callProcessingElement1Id" : "978",
                     "callProcessingElement2Id" : null,
                     "callProcessingElement3Id" : null,
-                    "callProcessingElement4Id" : null,    
+                    "callProcessingElement4Id" : null,
                     "callProcessingElementType" : 5,
                     "servicesProvisioned" : 1,
                     "phoneType" : 0,
@@ -303,9 +304,10 @@ GET /number-translations{?sourceDn,attributes,callProcessingElement1Id,callProce
             {
                 "_links" : {
                     "self" : {
-                        "href" : "http://lokiserver.apiary.io/loki/number-translations/3%3A1%3A8665554321%3A0%3A978%3A%3A%3A%3A5"
+                        "href" : "http://lokiserver.apiary.io/loki/number-translations/3-1-8665554321-0-978----5"
                     }
                 },
+                "id" : "3-1-8665554321-0-978----5",
                 "sourceDn" : "+1-8665554321",
                 "translatedDn" : "+1-5553043000",
                 "extensions" : {
@@ -347,7 +349,7 @@ GET /number-translations{?sourceDn,attributes,callProcessingElement1Id,callProce
 }
 
 
-Update a number translation.
+Update a number translation. All fields are optional.
 PUT /number-translations/{+id}
 > Content-Type: application/json
 {
@@ -369,6 +371,9 @@ PUT /number-translations/{+id}
     }
 }
 < 204
+< Transaction-Id: 1380080943120
++++++
+< 404
 < Transaction-Id: 1380080943120
 
 
@@ -397,6 +402,7 @@ Extension Keys:
 
 * owningCarrierId
 --
+
 
 Create a new Subscriber.
 POST /subscribers
@@ -440,7 +446,7 @@ POST /subscribers
     }
 }
 < 201
-< Location: http://lokiserver.apiary.io/loki/subscribers/1%3A2005553001%3A1%3A16
+< Location: http://lokiserver.apiary.io/loki/subscribers/1-2005553001-1-16
 < Transaction-Id: 1380080943120
 +++++
 < 409
@@ -463,9 +469,10 @@ POST /subscribers
         "ls:subscribers" : {
             "_links" : {
                 "self" : {
-                    "href" : "http://lokiserver.apiary.io/loki/subscribers/1%3A2005553001%3A1%3A16"
+                    "href" : "http://lokiserver.apiary.io/loki/subscribers/1-2005553001-1-16"
                 }
             },
+            "id" : "1-2005553001-1-16",
             "subscriberDn" : "+1-2005553001",
             "extensions" : {
                 "sonusPsx" : {
@@ -569,9 +576,10 @@ GET /subscribers{?subscriberDn,owningCarrierId}
             {
                 "_links" : {
                     "self" : {
-                        "href" : "http://lokiserver.apiary.io/loki/subscribers/1%3A2005553001%3A1%3A16"
+                        "href" : "http://lokiserver.apiary.io/loki/subscribers/1-2005553001-1-16"
                     }
                 },
+                "id" : "1-2005553001-1-16",
                 "subscriberDn" : "+1-2005553001",
                 "extensions" : {
                     "sonusPsx" : {
@@ -625,6 +633,53 @@ GET /subscribers{?subscriberDn,owningCarrierId}
     "detail" : "Request validation failed: params.subscriberDn does not match pattern^\\+[0-9]+-[0-9]+$: was processing value \"+1-\""
 }
 
+
+Update a subscriber. All fields are optional.
+PUT /subscribers/{+id}
+> Content-Type: application/json
+{
+    "extensions" : {
+        "sonusPsx" : {
+            "businessGroupId" : null,
+            "interLataCarrierId" : "5000",
+            "intraLataCarrierId" : "5000",
+            "intlCarrierId" : "5000",
+            "assignedCarrierId" : null,
+            "presentationFlag" : 0,
+            "prfdPacketServiceProfileId" : null,
+            "optionType" : 0,
+            "testSubscriber" : 0,
+            "billingPlanId" : "EXAMPLE_PLAN",
+            "localCarrierId" : "5000",
+            "authcodeScriptId" : "EXAMPLE_SCRIPT",
+            "elementAttributes" : 0,
+            "classOfServiceId" : "EXAMPLE_COS",
+            "pseudoCarrierId" : null,
+            "infoDigitId" : null,
+            "scpBusinessServiceGroup" : 0,
+            "authcodeGroupId" : null,
+            "pinDigits" : null,
+            "svcList1" : 0,
+            "svcList2" : 0,
+            "exceptionProfileId" : "EXAMPLE_PROFILE",
+            "isDestination" : 1,
+            "defaultCpc" : null,
+            "homeMobileNetwork" : 0,
+            "origEntityRoutingProfileId" : "EXAMPLE_RTGPROFILE",
+            "callingArea" : "555_EXAMPLE",
+            "businessUnitId" : null,
+            "deviceProfileId" : null,
+            "memberStatus" : -1
+        }
+    }
+}
+< 204
+< Transaction-Id: 1380080943120
++++++
+< 404
+< Transaction-Id: 1380080943120
+
+
 Delete a subscriber.
 DELETE /subscribers/{+id}
 < 204
@@ -674,7 +729,7 @@ POST /destinations
     }
 }
 < 201
-< Location: http://lokiserver.apiary.io/loki/destinations/1%3A2005553001%3A1
+< Location: http://lokiserver.apiary.io/loki/destinations/1-2005553001-1
 < Transaction-Id: 1380080943120
 +++++
 < 409
@@ -697,9 +752,10 @@ POST /destinations
         "ls:destinations" : {
             "_links" : {
                 "self" : {
-                    "href" : "http://lokiserver.apiary.io/loki/destinations/1%3A2005553001%3A1"
+                    "href" : "http://lokiserver.apiary.io/loki/destinations/1-2005553001-1"
                 }
             },
+            "id" : "1-2005553001-1",
             "destinationDn" : "+1-2005553001",
             "extensions" : {
                 "sonusPsx" : {
@@ -779,10 +835,11 @@ GET /destinations{?destinationDn}
             {
                 "_links" : {
                     "self" : {
-                        "href" : "http://lokiserver.apiary.io/loki/destinations/1%3A2005553001%3A1"
+                        "href" : "http://lokiserver.apiary.io/loki/destinations/1-2005553001-1"
                     }
                 },
-               "destinationDn" : "+1-2005553001",
+                "id" : "1-2005553001-1",
+                "destinationDn" : "+1-2005553001",
                 "extensions" : {
                     "sonusPsx" : {
                         "destSvcScriptId" : null,
@@ -815,6 +872,35 @@ GET /destinations{?destinationDn}
     "summary" : "Input validation failure",
     "detail" : "Request validation failed: params.destinationDn does not match pattern^\\+[0-9]+-[0-9]+$: was processing value \"+1-\""
 }
+
+
+Update a destination. All fields are optional.
+PUT /destinations/{+id}
+> Content-Type: application/json
+{
+    "extensions" : {
+        "sonusPsx" : {
+            "destSvcScriptId" : null,
+            "customScriptId" : null,
+            "elementAttributes" : 0,
+            "prfdPacketServiceProfileId" : null,
+            "routingLabelId" : "EXAMPLE_RTNG_LBL",
+            "isSubscriber" : 1,
+            "portedType" : 0,
+            "lnpTransitionFlag" : 0,
+            "homeGateway" : "EXAMPLE_GW",
+            "exceptionProfileId" : null,
+            "businessGroupId" : null,
+            "businessUnitId" : null
+        }
+    }
+}
+< 204
+< Transaction-Id: 1380080943120
++++++
+< 404
+< Transaction-Id: 1380080943120
+
 
 Delete a destination.
 DELETE /destinations/{+id}
@@ -881,7 +967,7 @@ POST /routes
     }
 }
 < 201
-< Location: http://lokiserver.apiary.io/loki/routes/1%3A%3A%3A%3A%3A0%3A3%3A2005553001%3A1%3AEXAMPLE_PARTITION%3A0%3A0%3A0%3A2147483647%3AALL%3A%3A%3AEXAMPLE_RTNG_LBL
+< Location: http://lokiserver.apiary.io/loki/routes/1-----0-3-2005553001-1-EXAMPLE_PARTITION-0-0-0-2147483647-ALL--
 < Transaction-Id: 1380080943120
 +++++
 < 409
@@ -904,9 +990,10 @@ POST /routes
         "ls:routes" : {
             "_links" : {
                 "self" : {
-                    "href" : "http://lokiserver.apiary.io/loki/routes/1%3A%3A%3A%3A%3A0%3A3%3A2005553001%3A1%3AEXAMPLE_PARTITION%3A0%3A0%3A0%3A2147483647%3AALL%3A%3A%3AEXAMPLE_RTNG_LBL"
+                    "href" : "http://lokiserver.apiary.io/loki/routes/1-----0-3-2005553001-1-EXAMPLE_PARTITION-0-0-0-2147483647-ALL--"
                 }
             },
+            "id" : "1-----0-3-2005553001-1-EXAMPLE_PARTITION-0-0-0-2147483647-ALL--",
             "destinationDn" : "+1-2005553001",
             "extensions" : {
                 "sonusPsx" : {
@@ -953,91 +1040,47 @@ Query Routes. Responses will include (at a minimum) they fields comprising the u
 
 ##URI Query Parameters
 
-<table border=1>
-    <thead>
-    <th>Parameter</th>
-    <th>Required?</th>
-    <th>Mode</th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>destinationDn</td>
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>Equal To</td>
-        </tr>
-        <tr>
-			<td>callProcessingElement1Id
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>Equal To</td>
-        </tr>
-        <tr>
-			<td>callProcessingElement2Id
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>Equal To</td>
-        </tr>
-        <tr>
-			<td>callProcessingElement3Id
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>Equal To</td>
-        </tr>
-        <tr>
-			<td>callProcessingElement4Id
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>Equal To</td>
-        </tr>
-        <tr>
-			<td>callProcessingElementType
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>Equal To</td>
-        </tr>
-        <tr>
-			<td>routingType
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>Equal To</td>
-        </tr>
-        <tr>
-			<td>partitionId
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>Equal To</td>
-        </tr>
-        <tr>
-			<td>calltype
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>Equal To</td>
-        </tr>
-        <tr>
-			<td>transmissionMedium
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>Equal To</td>
-        </tr>
-        <tr>
-			<td>userCallType
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>Equal To</td>
-        </tr>
-        <tr>
-			<td>digitType
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>Equal To</td>
-        </tr>
-        <tr>
-			<td>timeRangeProfileId
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>Equal To</td>
-        </tr>
-        <tr>
-			<td>callParamFilterProfileId
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>Equal To</td>
-        </tr>
-        <tr>
-			<td>domainName
-            <td style="text-align: center; font-weight:bold">&#x2713;</td>
-            <td>Equal To</td>
-        </tr>
-    </tbody>
-</table>
-GET /routes{?callProcessingElement1Id,callProcessingElement2Id,...}
+This request supports two modes. In both cases:
+
+* Each parameter is expected to be complete (the match is an "equals" match, with
+no support for wildcards or partial values).
+* A "null" value can be searched for by explicitly including the parameter with no value,
+e.g. "...&callProcessingElement1Id=".
+* If no match is found, the response will be 404 Not Found
+* When one or more matches or found, they will be included in the embedded array _embedded."ls:routes"[].
+
+To retrieve a single route resource given all elements of the key, include **all** of (and only) the following
+parameters in the request (even if some have null values):
+
+* destinationDn
+* callProcessingElement1Id
+* callProcessingElement2Id
+* callProcessingElement3Id
+* callProcessingElement4Id
+* callProcessingElementType
+* routingType
+* partitionId
+* calltype
+* transmissionMedium
+* userCallType
+* digitType
+* timeRangeProfileId
+* callParamFilterProfileId
+* domainName
+
+To retrieve all matching route resources for various search criteria, include one or more of the following
+parameters in the request:
+
+* destinationDn
+* partitionId
+* callProcessingElement1Id
+* callProcessingElement2Id
+* callProcessingElement3Id
+* callProcessingElement4Id
+* routingLabelId
+* callParamFilterProfileId
+* domainName
+GET /routes{?...}
 < 200
 < Content-Type: application/hal+json
 < Transaction-Id: 1380080943120
@@ -1059,9 +1102,10 @@ GET /routes{?callProcessingElement1Id,callProcessingElement2Id,...}
                 {
                     "_links" : {
                         "self" : {
-                            "href" : "http://lokiserver.apiary.io/loki/routes/1%3A%3A%3A%3A%3A0%3A3%3A2005553001%3A1%3AEXAMPLE_PARTITION%3A0%3A0%3A0%3A2147483647%3AALL%3A%3A%3AEXAMPLE_RTNG_LBL"
+                            "href" : "http://lokiserver.apiary.io/loki/routes/1-----0-3-2005553001-1-EXAMPLE_PARTITION-0-0-0-2147483647-ALL--"
                         }
                     },
+                    "id" : "1-----0-3-2005553001-1-EXAMPLE_PARTITION-0-0-0-2147483647-ALL--",
                     "destinationDn" : "+1-2005553001",
                     "extensions" : {
                         "sonusPsx" : {
@@ -1082,6 +1126,34 @@ GET /routes{?callProcessingElement1Id,callProcessingElement2Id,...}
     	                    "routingLabelId" : "EXAMPLE_RTNG_LBL"
                         }
                     }
+                },
+                {
+                    "_links" : {
+                        "self" : {
+                            "href" : "http://lokiserver.apiary.io/loki/routes/1-4----0-3-2005553001-1-ANOTHER_PARTITION-0-0-0-2147483647-ALL--"
+                        }
+                    },
+                    "id" : "1-4----0-3-2005553001-1-ANOTHER_PARTITION-0-0-0-2147483647-ALL--",
+                    "destinationDn" : "+1-2005553001",
+                    "extensions" : {
+                        "sonusPsx" : {
+    	                    "callProcessingElement1Id" : 4,
+        	                "callProcessingElement2Id" : null,
+    	                    "callProcessingElement3Id" : null,
+    	                    "callProcessingElement4Id" : null,
+    	                    "callProcessingElementType" : 0,
+    	                    "routingType" : 3,
+    	                    "partitionId" : "ANOTHER_PARTITION",
+        	                "calltype" : 0,
+    	                    "transmissionMedium" : "0",
+    	                    "userCallType" : 0,
+    	                    "digitType" : 2147483647,
+    	                    "timeRangeProfileId" : "ALL",
+    	                    "callParamFilterProfileId" : null,
+        	                "domainName" : null,
+    	                    "routingLabelId" : "ANOTHER_RTNG_LBL"
+                        }
+                    }
                 }
             ]
         }
@@ -1098,6 +1170,24 @@ GET /routes{?callProcessingElement1Id,callProcessingElement2Id,...}
     "summary" : "Input validation failure",
     "detail" : "Request validation failed: params.destinationDn does not match pattern^\\+[0-9]+-[0-9]+$: was processing value \"+1-\""
 }
+
+
+Update a route. All fields are optional.
+PUT /routes/{+id}
+> Content-Type: application/json
+{
+    "extensions" : {
+        "sonusPsx" : {
+	        "routingLabelId" : "EXAMPLE_RTNG_LBL"
+        }
+    }
+}
+< 204
+< Transaction-Id: 1380080943120
++++++
+< 404
+< Transaction-Id: 1380080943120
+
 
 Delete a route.
 DELETE /routes/{+id}
@@ -1139,7 +1229,7 @@ Create a new VoIP User.
     <tbody>
         <tr>
             <td>mode</td>
-            <td style="text-align: center; font-weight:bold">&#x2717;</td>
+            <td style="text-align: center; font-weight:bold">&#x2713;</td>
             <td>prevalidate-and-create</td>
             <td>Controls execution mode as described in **ref general documentation.<br />
             Allowed values: [ "prevalidate-only", "prevalidate-and-create", "create-only" ].<br />
@@ -1319,7 +1409,7 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
             <td style="text-align: center; font-weight:bold">&#x2717</td>
             <td></td>
             <td>List of names of service packs to be assigned to the new VoIP User.<br />
-            <b>The list is ordered **details to be added</b></td>
+            <b>update for base / add-on</b></td>
         </tr>
         <tr>
             <td>services</td>
@@ -1328,14 +1418,36 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
             <td>The set of services to assign to the new VoIP User.<br />
             Also specifies (optionally) any pre-configuration settings for these services and/or any
             services assigned via service packs (see servicePacks property).<br />
-            <i>Note, any value in services."Third-Party Voice Mail Support".noAnswerNumberOfRings will
-            be overridden by services."Call Forwarding No Answer".numberOfRings if present, as they both affect the
-            same setting on the user in BroadWorks.</i></td>
+            <b>update for remaining service parameters</b>
+            </td>
+        </tr>
+        <tr>
+            <td>services.'Charge Number'.phoneNumber</td>
+            <td style="text-align: center; font-weight:bold">&#x2717</td>
+            <td></td>
+            <td>Set to null to override automatic Charge Number allocation and force the Charge Number phone number to be empty
+            </td>
+        </tr>
+        <tr>
+            <td>services.'Call Forwarding No Answer'.numberOfRings</td>
+            <td style="text-align: center; font-weight:bold">&#x2717</td>
+            <td></td>
+            <td>Set to 0 for "None".<br />
+            <i>Note that this value will override services.'Third-Party Voice Mail Support'.noAnswerNumberOfRings if both are present.</i>
+            </td>
+        </tr>
+        <tr>
+            <td>services.'Third-Party Voice Mail Support'.noAnswerNumberOfRings</td>
+            <td style="text-align: center; font-weight:bold">&#x2717</td>
+            <td></td>
+            <td>Set to 0 for "None".<br />
+            <i>Note that this value will be overridden by services.'Call Forwarding No Answer'.numberOfRings if both are present.</i>
+            </td>
         </tr>
     </tbody>
 </table>
 
-POST /customers/{customerId}/sites/{siteId}/voip-users
+POST /customers/{+customerId}/sites/{+siteId}/voip-users
 > Content-Type: application/json
 {
     "userId" : "2005553001@example.com",
@@ -1382,14 +1494,32 @@ POST /customers/{customerId}/sites/{siteId}/voip-users
             "isActive" : true,
             "forwardToPhoneNumber" : "+1-2005553101",
             "numberOfRings" : 4
+        },
+        "Call Forwarding Not Reachable" : {
+            "isActive" : true,
+            "forwardToPhoneNumber" : "+1-2005553101"
         }
     }
 }
 < 201
-< Location: http://loki3.apiary.io/loki/customers/exampleCom/sites/exampleComNorth/voip-users/2%3A2005553001%40example.com
+< Location: http://loki3.apiary.io/loki/voip-users/2005553001%40example.com
 < Transaction-Id: 1380080943120
-< Content-Type: application/json
+< Content-Type: application/hal+json
 {
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/voip-users/2005553001%40example.com"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        }
+    ],
+    "customerId" : "Example Com",
+    "siteId" : "Example Com - North",
     "phoneNumber" : "+1-2005553001",
     "extension" : "3001",
     "CLID" : "+1-2005553001",
@@ -1399,6 +1529,8 @@ POST /customers/{customerId}/sites/{siteId}/voip-users
     "lastName" : "Smith",
     "callingLineIdLastName" : "Smith",
     "callingLineIdFirstName" : "John",
+    "timeZone" : "America/New_York",
+    "language" : "English",
     "sharedDeviceName" : "exampleComIad001",
     "trunkGroupName" : null,
     "services" : {
@@ -1420,12 +1552,12 @@ POST /customers/{customerId}/sites/{siteId}/voip-users
 }
 +++++
 < 500
-< Content-Type: application/json
 < Transaction-Id: 1380080943120
+< Content-Type: application/json
 {
-    "errorCode" : "**tbd",
-    "summary" : "**tbd Internal Error",
-    "detail" : "[detail here]"
+    "errorCode" : "INTERNAL_ERROR,
+    "summary" : "Internal error creating voip-user",
+    "detail" : "The server encountered an error creating the resource. Please contact your administrator for assistance."
 }
 +++++
 < 400
@@ -1436,6 +1568,35 @@ POST /customers/{customerId}/sites/{siteId}/voip-users
     "summary" : "Input validation failure",
     "detail" : "Request validation failed: phoneNumber does not match pattern^\\+[0-9]+-[0-9]+$: was processing value \"+1-\""
 }
+
+--
+CHANGELOG
+
+#1.5
+Changes for *Functional Description: Alternate API Navigation*:
+* Update URIs (self links, Location headers) to reflect changed URI construction
+* Update response bodies to add new properties required to expand URI Template variables
+* Convert POST /loki/customers/{+customerId}/sites/{+siteId}/voip-users 201 response to hal+json
+
+Changes for *Functional Description: Sonus Entity and Utility Services - Subscriber, Destination, and Route Modify Support*:
+* Add PUT /loki/{subscribers,destinations,routes}.
+
+Changes for *Functional Description: Sonus Entity and Utility Services - Route Query Enhancements*:
+* Update GET /routes{?...} documentation, supported URL query parameters, and 200 OK response body.
+
+Changes for *Functional Description: VoIP User Create - Configure Call Forwarding Not Reachable (BroadWorks)*:
+* Update POST /loki/customers/{+customerId}/sites/{+siteId}/voip-users request body to add Call Forwarding Not Reachable service.
+
+General:
+* Improve comments.
+* Correct errors in json-schema.
+* Add 404 example for POST /loki/number-translations.
+* Document URL parameters for POST /loki/subscribers.
+* Correct the URI in the Location header in POST /loki/routes 201 Created response, and in embedded ls:routes in 409 Conflict response, and in the 200 OK response to GET /loki/routes{?...}.
+* Further updates to POST /loki/customers/{+customerId}/sites/{+siteId}/voip-users: improve documentation, add timeZone and language; add "+" in URI template parameters to indicate reserved expansion.
+* Correct documentation to mark ?mode as required on POST /loki/voip-users.
+
+--
 
 
 -- JSON Schema Validations --
@@ -1456,10 +1617,11 @@ POST /loki/number-translations
 PUT /loki/number-translations/{+id}
 { "request" :
     { "type": "object",
-          "properties": {
-            "sourceDn": { "disallow": "any" },
-            "translatedDn": { "type": "string", "maxLength" : 48 }
-          }
+        "properties" : {
+                "translatedDn" : {},
+                "extensions" : {}
+            },
+            "additionalProperties" : false
     },
     "response" : { }
 }
@@ -1471,6 +1633,18 @@ POST /loki/subscribers
             "subscriberDn": { "type": "string", "maxLength" : 48 }
           },
         "required" : ["subscriberDn"]
+    },
+  "response" :
+    { }
+}
+
+PUT /loki/subscribers/{+id}
+{ "request" :
+    { "type": "object",
+          "properties": {
+                "extensions" : {}
+            },
+        "additionalProperties" : false
     },
   "response" :
     { }
