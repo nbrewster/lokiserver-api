@@ -1,0 +1,2456 @@
+HOST: http://lokiserverbranch.apiary.io/loki
+
+--- Loki Server (branch 1.7.1) ---
+
+---
+
+# This documentation is for the Loki REST public API, Loki REST branch 1.7.1 (pre-release).
+See also See also [GA documentation](http://docs.lokiserver.apiary.io/) and
+[dev documentation](http://docs.lokidev.apiary.io/).
+
+**UNRELEASED** (this is a development edition)
+
+Below is (work in progress) documentation describing the the Loki 3.0 API.
+
+#General
+
+At this time, the application/hal+json content type is supported in request and response bodies.
+[TODO: add references / explanations of HAL]
+
+**Note: all references to <code>lokiserver.apiary.io</code> are for example purposes only. In a deployed Loki Server
+these will be references to the Loki REST API host.**
+
+**TBD: add HAL notes. Note (at least initially) in the response bodies, _links.self.href matches
+the URI submitted by the client, including any query parameters.**
+
+## URI Templates
+Refer to https://tools.ietf.org/html/rfc6570 for details on URI Templates. Not that Loki REST
+uses reserved characters (i.e. ":") in some URI Template variables, thus the request templates
+use the "{+id}" format - see additional detail at https://tools.ietf.org/html/rfc6570#section-3.2.3.
+
+## Collections
+Unless otherwise noted, Collection resources support standard REST request methods:
+
+<dl>
+<dt>HEAD
+<dd>Retrieve resource metadata without retrieving the representation.
+ Common response codes:
+<ul>
+<li>204 No Content: Resource exists. No body (no representation) is returned.
+<li>404 Not Found: Resource does not exist.
+</ul>
+<dt>GET
+<dd>Retrieve a representation of a resource. There are two standard forms of GET:
+<ul>
+<li>GET on a specific resource {id} (given the resource's URI).
+<li>GET on the Collection, with query parameters. You can query for exact matches
+on any of the core parameters, as well as any extension parameters supported by the
+network elements configured in the system. Note that if appropriate, the Collection
+may include a search Controller (described in the individual sections below) to support complex searches.
+</ul>
+Common response codes:
+<ul>
+<li>200 OK: Resource exists; response body contains representation.
+<li>204 No Content: Resource exists; there is no body (no representation) to be returned.
+<li>404 Not Found: Resource does not exist.
+</ul>
+<dt>POST
+<dd>Create a new resource in the Collection. Also used in special cases to invoke controller resources. Common response codes:
+<ul>
+<li>200 OK: Pre-validation completed successfully. The optional response body includes any pre-validation results.
+<li>201 Created: Resource created. URI of the created Resource is returned in the Location headder and the "url" element in the response body.
+<li>204 No Content: Pre-validation completed with no action. This response is sent when a POST is called with "mode=prevalidate-only) on a resource that does not have a pre-validation routine.
+<li>400 Bad Request: Request is not valid (e.g. missing required paramterer, invalid values, etc).
+<li>404 Not Found: A required resource was not found (e.g. BroadWorks Group does not exist when creating a VoIP User).
+<li>409 Conflict: Pre-validation failed because a resource with an identical key (which may be a composite key combining several parameters) already exists. Response body will include a link to the URI of the existing resource.
+<li>422 Unprocessable Entity: Pre-validation failed due to a failed semantic test. The response body includes details on the failure(s).
+<li>Some POST response codes are only sentfor certain values of the "mode" URL parameter, as noted below:
+<ul>
+<li>prevalidate-only: 200, 204, 400, 409, 422
+<li>prevalidate-and-create: 201, 400, 409, 422
+<li>create-only: 201, 400
+</ul>
+</ul>
+<dt>PUT
+<dd>Update an existing Resource in the Collection. Any key fields (those which comprise the key which uniquely identifies a resource)
+are immutable (may not be changed). See the documentation for each resource for the list of keys. Common response codes:
+<ul>
+<li>200 OK: Resource successfully updated.
+<li>400 Bad Reqkuest: Request is not valid (e.g. invalid values, etc).
+<li>403 Forbidden: Update is not allowed (e.g. attempt to update a read-only field).
+<li>404 Not Found: resource does not exist
+</ul>
+<dt>DELETE
+<dd>Delete a resource. Common response codes:
+<ul>
+<li>204 No Content: Resource successfully deleted
+<li>404 Not Found: Resource does not exist
+</ul>
+<dt>OPTIONS
+<dd>Fetch resource metadata, including the list of allowed methods. Common response codes:
+<ul>
+<li>[future] 200 OK: Resource exists. Accept header lists allowed request methods. Response body may provide additional information.
+<li>204 No Content: Resource exists. Accept header lists allowed request methods.
+<li>404 Not Found: Resource does not exist.
+</dl>
+---
+
+--
+Number Translations
+##Collection
+
+Supported network elements:
+
+* Sonus PSX
+
+Loki must have at least one Network Element configured with support for Number Translations (e.g. Sonus PSX).
+
+Loki must be configured to select the appropriate Network Element for new Number Translations
+(by default, the first configured Network Element with Number Translations support will be used).
+
+See the Loki documentation appropriate to the configured Network Element for mappings to 3rd-party API fields and
+references to 3rd-party documentation.
+
+Keys:
+
+* sourceDn
+
+Extension Keys:
+
+* attributes
+* callProcessingElement1Id
+* callProcessingElement2Id
+* callProcessingElement3Id
+* callProcessingElement4Id
+* callProcessingElementType
+
+[pending: per-parameter descriptions - pending an apiary.io upgrade]
+
+[pending: per-parameter schema/validation information - pending an apiary.io upgrade]
+
+Refer to the **Sonus Insight API Programmer Guide** for descriptions, data types, defaults, and allowed values for
+request and response properties under <code>extensions.sonusPsx</code>. Note:
+
+* If the Sonus documentation indicates a data type of integer, short, or long, the value will be numeric in the Loki REST JSON responses.
+* If the Sonus documentation indicates a data type of string, the value will be a string (or null) in the Loki REST JSON responses.
+--
+
+Create a new Number Translation.
+POST /number-translations
+> Content-Type: application/json
+{
+    "sourceDn" : "+1-8665554321",
+    "translatedDn" : "+1-5553043000",
+    "extensions" : {
+        "sonusPsx" : {
+            "attributes" : 0,
+            "callProcessingElement1Id" : "978",
+            "callProcessingElement2Id" : null,
+            "callProcessingElement3Id" : null,
+            "callProcessingElement4Id" : null,
+            "callProcessingElementType" : 5,
+            "servicesProvisioned" : 0,
+            "phoneType" : 1,
+            "suspendedFlag" : 0,
+            "directTranslationFlag" : 0,
+            "translationLabelId" : null,
+            "translatedCarrierId" : null,
+            "translatedCalltype" : 0,
+            "translatedNpi" : 0,
+            "translatedNoa" : 13,
+            "useTranslationProfile" : 0,
+            "translationProfileId" : null
+        }
+    }
+}
+< 201
+< Location: http://lokiserver.apiary.io/loki/number-translations/3-1-8665554321-0-978----5
+< Transaction-Id: 1380080943120
++++++
+< 409
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/number-translations"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        }
+    ],
+    "_embedded" : {
+        "ls:number-translations" : {
+            "_links" : {
+                "self" : {
+                    "href" : "http://lokiserver.apiary.io/loki/number-translations/3-1-8665554321-0-978----5"
+                }
+            },
+            "id" : "3-1-8665554321-0-978----5",
+            "sourceDn" : "+1-8665554321",
+            "translatedDn" : "+1-5553043210",
+            "extensions" : {
+                "sonusPsx" : {
+                    "attributes" : 0,
+                    "callProcessingElement1Id" : "978",
+                    "callProcessingElement2Id" : null,
+                    "callProcessingElement3Id" : null,
+                    "callProcessingElement4Id" : null,
+                    "callProcessingElementType" : 5,
+                    "servicesProvisioned" : 1,
+                    "phoneType" : 0,
+                    "suspendedFlag" : 0,
+                    "directTranslationFlag" : 0,
+                    "translationLabelId" : null,
+                    "translatedCarrierId" : null,
+                    "translatedCalltype" : 0,
+                    "translatedNpi" : 0,
+                    "translatedNoa" : 12,
+                    "useTranslationProfile" : 0,
+                    "translationProfileId" : null
+                }
+            }
+        }
+    }
+}
++++++
+< 500
+< Transaction-Id: 1380080943120
+< Content-Type: application/json
+{
+    "errorCode" : "**tbd",
+    "summary" : "Internal Error",
+    "detail" : "[detail here]"
+}
+
+
+Query number translations. Responses will include (at a minimum) they fields comprising the unique key for the resource.
+
+[future: pagination of results via offset and max; field parameter to specify included/excluded fields]
+
+[future: enhance to include all parameters, not just the key and the full uri? means larger response body,
+but also means the client doesn't have to follow with a get /loki/number-translations/{+id} if they want the full resource
+representation.]
+
+##URI Query Parameters
+
+<table border=1>
+    <thead>
+    <th>Parameter</th>
+    <th>Required?</th>
+    <th>Type</th>
+    <th>Mode</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>sourceDn</td>
+            <td style="text-align: center; font-weight:bold">yes</td>
+            <td>core</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+            <td>attributes</td>
+            <td style="text-align: center; font-weight:bold">yes</td>
+            <td>extension</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+            <td>callProcessingElement1Id</td>
+            <td style="text-align: center; font-weight:bold">yes</td>
+            <td>extension</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+            <td>callProcessingElement2Id</td>
+            <td style="text-align: center; font-weight:bold">yes</td>
+            <td>extension</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+            <td>callProcessingElement3Id</td>
+            <td style="text-align: center; font-weight:bold">yes</td>
+            <td>extension</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+            <td>callProcessingElement4Id</td>
+            <td style="text-align: center; font-weight:bold">yes</td>
+            <td>extension</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+            <td>callProcessingElementType</td>
+            <td style="text-align: center; font-weight:bold">yes</td>
+            <td>extension</td>
+            <td>Equal To</td>
+        </tr>
+    </tbody>
+</table>
+GET /number-translations{?sourceDn,attributes,callProcessingElement1Id,callProcessingElement2Id,callProcessingElement3Id,callProcessingElement4Id,callProcessingElementType}
+< 200
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/number-translations?sourceDn=%2B1-8665554321&attributes=0&callProcessingElement1Id=978&callProcessingElement2Id=&callProcessingElement3Id=&callProcessingElement4Id=&callProcessingElementType=5"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        }
+    ],
+    "_embedded" : {
+        "ls:number-translations" : [
+            {
+                "_links" : {
+                    "self" : {
+                        "href" : "http://lokiserver.apiary.io/loki/number-translations/3-1-8665554321-0-978----5"
+                    }
+                },
+                "id" : "3-1-8665554321-0-978----5",
+                "sourceDn" : "+1-8665554321",
+                "translatedDn" : "+1-5553043000",
+                "extensions" : {
+                    "sonusPsx" : {
+                        "attributes" : 0,
+                        "callProcessingElement1Id" : "978",
+                        "callProcessingElement2Id" : null,
+                        "callProcessingElement3Id" : null,
+                        "callProcessingElement4Id" : null,
+                        "callProcessingElementType" : 5,
+                        "servicesProvisioned" : 0,
+                        "phoneType" : 1,
+                        "suspendedFlag" : 0,
+                        "directTranslationFlag" : 0,
+                        "translationLabelId" : null,
+                        "translatedCarrierId" : null,
+                        "translatedCalltype" : 0,
+                        "translatedNpi" : 0,
+                        "translatedNoa" : 13,
+                        "useTranslationProfile" : 0,
+                        "translationProfileId" : null
+                    }
+                }
+            }
+        ]
+    }
+}
++++++
+< 404
+< Transaction-Id: 1380080943120
+{
+    "errorCode": "ERR_REC_NOT_FOUND",
+    "summary": "Failed to 'Retrieve' entity.",
+    "detail": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" [^] xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" [^] xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n [^] <soapenv:Body>\n <soapenv:Fault>\n <faultcode>soapenv:Server.generalException</faultcode>\n <faultstring></faultstring>\n <detail>\n <ns1:fault href=\"#id0\" xmlns:ns1=\"http://www.sonusnet.com/ems/emsapi/psx/r07_03_06/intf\"/>\n [^] <ns2:exceptionName xmlns:ns2=\"http://xml.apache.org/axis/\">com.sonus.ems.api.psx.r07_03_06.model.ProvApiException</ns2:exceptionName>\n [^] </detail>\n </soapenv:Fault>\n <multiRef id=\"id0\" soapenc:root=\"0\" soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" [^] xsi:type=\"ns3:ProvApiException\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\" [^] xmlns:ns3=\"http://www.sonusnet.com/ems/emsapi/psx/r07_03_06/model\">\n [^] <errorCode xsi:type=\"xsd:string\">ERR_REC_NOT_FOUND</errorCode>\n <message xsi:type=\"xsd:string\">Failed to 'Retrieve' entity.</message>\n <rootCause xsi:type=\"xsd:string\">(ERR_REC_NOT_FOUND) [resource] not found for the given criteria. (rc=17)</rootCause>\n </multiRef>\n </soapenv:Body>\n</soapenv:Envelope>"
+}
++++++
+< 400
+< Transaction-Id: 1380080943120
+< Content-Type: application/json
+{
+    "errorCode" : "FORMAT_ERROR",
+    "summary" : "Internal Error",
+    "detail" : "Request validation failed: params.sourceDn does not match pattern^\\+[0-9]+-[0-9]+$: was processing value \"+1-\""
+}
+
+
+Update a number translation. All fields are optional.
+PUT /number-translations/{+id}
+> Content-Type: application/json
+{
+    "translatedDn" : "+1-5553043000",
+    "extensions" : {
+        "sonusPsx" : {
+            "servicesProvisioned" : 0,
+            "phoneType" : 1,
+            "suspendedFlag" : 0,
+            "directTranslationFlag" : 0,
+            "translationLabelId" : null,
+            "translatedCarrierId" : null,
+            "translatedCalltype" : 0,
+            "translatedNpi" : 0,
+            "translatedNoa" : 13,
+            "useTranslationProfile" : 0,
+            "translationProfileId" : null
+        }
+    }
+}
+< 204
+< Transaction-Id: 1380080943120
++++++
+< 404
+< Transaction-Id: 1380080943120
+
+
+Delete a number translation.
+DELETE /number-translations/{+id}
+< 204
+< Transaction-Id: 1380080943120
++++++
+< 404
+< Transaction-Id: 1380080943120
+
+
+--
+Subscribers
+##Collection
+
+Supported network elements:
+
+* Sonus PSX
+
+Keys:
+
+* subscriberDn
+
+Extension Keys:
+
+* owningCarrierId
+
+Refer to the **Sonus Insight API Programmer Guide** for descriptions, data types, defaults, and allowed values for
+request and response properties under <code>extensions.sonusPsx</code>. Note:
+
+* If the Sonus documentation indicates a data type of integer, short, or long, the value will be numeric in the Loki REST JSON responses.
+* If the Sonus documentation indicates a data type of string, the value will be a string (or null) in the Loki REST JSON responses.
+--
+
+
+Create a new Subscriber.
+POST /subscribers
+> Content-Type: application/json
+{
+    "subscriberDn" : "+1-2005553001",
+    "extensions" : {
+        "sonusPsx" : {
+            "owningCarrierId" : "16",
+            "businessGroupId" : null,
+            "interLataCarrierId" : "5000",
+            "intraLataCarrierId" : "5000",
+            "intlCarrierId" : "5000",
+            "assignedCarrierId" : null,
+            "presentationFlag" : 0,
+            "prfdPacketServiceProfileId" : null,
+            "optionType" : 0,
+            "testSubscriber" : 0,
+            "billingPlanId" : "EXAMPLE_PLAN",
+            "localCarrierId" : "5000",
+            "authcodeScriptId" : "EXAMPLE_SCRIPT",
+            "elementAttributes" : 0,
+            "classOfServiceId" : "EXAMPLE_COS",
+            "pseudoCarrierId" : null,
+            "infoDigitId" : null,
+            "scpBusinessServiceGroup" : 0,
+            "authcodeGroupId" : null,
+            "pinDigits" : null,
+            "svcList1" : 0,
+            "svcList2" : 0,
+            "exceptionProfileId" : "EXAMPLE_PROFILE",
+            "isDestination" : 1,
+            "defaultCpc" : null,
+            "homeMobileNetwork" : 0,
+            "origEntityRoutingProfileId" : "EXAMPLE_RTGPROFILE",
+            "callingArea" : "555_EXAMPLE",
+            "businessUnitId" : null,
+            "deviceProfileId" : null,
+            "memberStatus" : -1
+        }
+    }
+}
+< 201
+< Location: http://lokiserver.apiary.io/loki/subscribers/1-2005553001-1-16
+< Transaction-Id: 1380080943120
++++++
+< 409
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/subscribers"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        }
+    ],
+    "_embedded" : {
+        "ls:subscribers" : {
+            "_links" : {
+                "self" : {
+                    "href" : "http://lokiserver.apiary.io/loki/subscribers/1-2005553001-1-16"
+                }
+            },
+            "id" : "1-2005553001-1-16",
+            "subscriberDn" : "+1-2005553001",
+            "extensions" : {
+                "sonusPsx" : {
+                    "owningCarrierId" : "16",
+                    "businessGroupId" : null,
+                    "interLataCarrierId" : "0000",
+                    "intraLataCarrierId" : "0000",
+                    "intlCarrierId" : "0000",
+                    "assignedCarrierId" : null,
+                    "presentationFlag" : 0,
+                    "prfdPacketServiceProfileId" : null,
+                    "optionType" : 0,
+                    "testSubscriber" : 0,
+                    "billingPlanId" : "EXAMPLE_ANOTHER",
+                    "localCarrierId" : "0000",
+                    "authcodeScriptId" : "EXAMPLE_ANOTHER",
+                    "elementAttributes" : 0,
+                    "classOfServiceId" : "EXAMPLE_ANOTHER",
+                    "pseudoCarrierId" : null,
+                    "infoDigitId" : null,
+                    "scpBusinessServiceGroup" : 0,
+                    "authcodeGroupId" : null,
+                    "pinDigits" : null,
+                    "svcList1" : 0,
+                    "svcList2" : 0,
+                    "exceptionProfileId" : "EXAMPLE_ANOTHER",
+                    "isDestination" : 1,
+                    "defaultCpc" : null,
+                    "homeMobileNetwork" : 0,
+                    "origEntityRoutingProfileId" : "EXAMPLE_ANOTHER",
+                    "callingArea" : "555_ANOTHER",
+                    "businessUnitId" : null,
+                    "deviceProfileId" : null,
+                    "memberStatus" : -1
+                }
+            }
+        }
+    }
+}
++++++
+< 500
+< Transaction-Id: 1380080943120
+< Content-Type: application/json
+{
+    "errorCode" : "**tbd",
+    "summary" : "**tbd Internal Error",
+    "detail" : "[detail here]"
+}
++++++
+< 400
+< Transaction-Id: 1380080943120
+< Content-Type: application/json
+{
+    "errorCode" : "FORMAT_ERROR",
+    "summary" : "Input validation failure",
+    "detail" : "Request validation failed: params.subscriberDn does not match pattern^\\+[0-9]+-[0-9]+$: was processing value \"+1-\""
+}
+
+Query Subscribers. Responses will include (at a minimum) they fields comprising the unique key for the resource.
+
+##URI Query Parameters
+
+<table border=1>
+    <thead>
+    <th>Parameter</th>
+    <th>Required?</th>
+    <th>Mode</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>subscriberDn</td>
+            <td style="text-align: center; font-weight:bold">yes</td>
+            <td>Equal To</td>
+        </tr>
+        <tr>
+            <td>owningCarrierId</td>
+            <td style="text-align: center; font-weight:bold">yes</td>
+            <td>Equal To</td>
+        </tr>
+    </tbody>
+</table>
+GET /subscribers{?subscriberDn,owningCarrierId}
+< 200
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/subscribers?subscriberDn=%2B1-2005553001&owningCarrierId=16"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        }
+    ],
+    "_embedded" : {
+        "ls:subscribers" : [
+            {
+                "_links" : {
+                    "self" : {
+                        "href" : "http://lokiserver.apiary.io/loki/subscribers/1-2005553001-1-16"
+                    }
+                },
+                "id" : "1-2005553001-1-16",
+                "subscriberDn" : "+1-2005553001",
+                "extensions" : {
+                    "sonusPsx" : {
+                        "owningCarrierId" : "16",
+                        "businessGroupId" : null,
+                        "interLataCarrierId" : "5000",
+                        "intraLataCarrierId" : "5000",
+                        "intlCarrierId" : "5000",
+                        "assignedCarrierId" : null,
+                        "presentationFlag" : 0,
+                        "prfdPacketServiceProfileId" : null,
+                        "optionType" : 0,
+                        "testSubscriber" : 0,
+                        "billingPlanId" : "EXAMPLE_PLAN",
+                        "localCarrierId" : "5000",
+                        "authcodeScriptId" : "EXAMPLE_SCRIPT",
+                        "elementAttributes" : 0,
+                        "classOfServiceId" : "EXAMPLE_COS",
+                        "pseudoCarrierId" : null,
+                        "infoDigitId" : null,
+                        "scpBusinessServiceGroup" : 0,
+                        "authcodeGroupId" : null,
+                        "pinDigits" : null,
+                        "svcList1" : 0,
+                        "svcList2" : 0,
+                        "exceptionProfileId" : "EXAMPLE_PROFILE",
+                        "isDestination" : 1,
+                        "defaultCpc" : null,
+                        "homeMobileNetwork" : 0,
+                        "origEntityRoutingProfileId" : "EXAMPLE_RTGPROFILE",
+                        "callingArea" : "555_EXAMPLE",
+                        "businessUnitId" : null,
+                        "deviceProfileId" : null,
+                        "memberStatus" : -1
+                    }
+                }
+            }
+        ]
+    }
+}
++++++
+< 404
+< Transaction-Id: 1380080943120
+{
+    "errorCode": "ERR_REC_NOT_FOUND",
+    "summary": "Failed to 'Retrieve' entity.",
+    "detail": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" [^] xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" [^] xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n [^] <soapenv:Body>\n <soapenv:Fault>\n <faultcode>soapenv:Server.generalException</faultcode>\n <faultstring></faultstring>\n <detail>\n <ns1:fault href=\"#id0\" xmlns:ns1=\"http://www.sonusnet.com/ems/emsapi/psx/r07_03_06/intf\"/>\n [^] <ns2:exceptionName xmlns:ns2=\"http://xml.apache.org/axis/\">com.sonus.ems.api.psx.r07_03_06.model.ProvApiException</ns2:exceptionName>\n [^] </detail>\n </soapenv:Fault>\n <multiRef id=\"id0\" soapenc:root=\"0\" soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" [^] xsi:type=\"ns3:ProvApiException\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\" [^] xmlns:ns3=\"http://www.sonusnet.com/ems/emsapi/psx/r07_03_06/model\">\n [^] <errorCode xsi:type=\"xsd:string\">ERR_REC_NOT_FOUND</errorCode>\n <message xsi:type=\"xsd:string\">Failed to 'Retrieve' entity.</message>\n <rootCause xsi:type=\"xsd:string\">(ERR_REC_NOT_FOUND) [resource] not found for the given criteria. (rc=17)</rootCause>\n </multiRef>\n </soapenv:Body>\n</soapenv:Envelope>"
+}
++++++
+< 400
+< Transaction-Id: 1380080943120
+< Content-Type: application/json
+{
+    "errorCode" : "FORMAT_ERROR",
+    "summary" : "Input validation failure",
+    "detail" : "Request validation failed: params.subscriberDn does not match pattern^\\+[0-9]+-[0-9]+$: was processing value \"+1-\""
+}
+
+
+Update a subscriber. All fields are optional.
+PUT /subscribers/{+id}
+> Content-Type: application/json
+{
+    "extensions" : {
+        "sonusPsx" : {
+            "businessGroupId" : null,
+            "interLataCarrierId" : "5000",
+            "intraLataCarrierId" : "5000",
+            "intlCarrierId" : "5000",
+            "assignedCarrierId" : null,
+            "presentationFlag" : 0,
+            "prfdPacketServiceProfileId" : null,
+            "optionType" : 0,
+            "testSubscriber" : 0,
+            "billingPlanId" : "EXAMPLE_PLAN",
+            "localCarrierId" : "5000",
+            "authcodeScriptId" : "EXAMPLE_SCRIPT",
+            "elementAttributes" : 0,
+            "classOfServiceId" : "EXAMPLE_COS",
+            "pseudoCarrierId" : null,
+            "infoDigitId" : null,
+            "scpBusinessServiceGroup" : 0,
+            "authcodeGroupId" : null,
+            "pinDigits" : null,
+            "svcList1" : 0,
+            "svcList2" : 0,
+            "exceptionProfileId" : "EXAMPLE_PROFILE",
+            "isDestination" : 1,
+            "defaultCpc" : null,
+            "homeMobileNetwork" : 0,
+            "origEntityRoutingProfileId" : "EXAMPLE_RTGPROFILE",
+            "callingArea" : "555_EXAMPLE",
+            "businessUnitId" : null,
+            "deviceProfileId" : null,
+            "memberStatus" : -1
+        }
+    }
+}
+< 204
+< Transaction-Id: 1380080943120
++++++
+< 404
+< Transaction-Id: 1380080943120
+
+
+Delete a subscriber.
+DELETE /subscribers/{+id}
+< 204
+< Transaction-Id: 1380080943120
++++++
+< 404
+< Transaction-Id: 1380080943120
+
+
+--
+Destinations
+##Collection
+
+Supported network elements:
+
+* Sonus PSX
+
+Keys:
+
+* destinationDn
+
+Extension Keys:
+
+* (none)
+
+Refer to the **Sonus Insight API Programmer Guide** for descriptions, data types, defaults, and allowed values for
+request and response properties under <code>extensions.sonusPsx</code>. Note:
+
+* If the Sonus documentation indicates a data type of integer, short, or long, the value will be numeric in the Loki REST JSON responses.
+* If the Sonus documentation indicates a data type of string, the value will be a string (or null) in the Loki REST JSON responses.
+--
+
+Create a new Destination.
+POST /destinations
+> Content-Type: application/json
+{
+    "destinationDn" : "+1-2005553001",
+    "extensions" : {
+        "sonusPsx" : {
+            "destSvcScriptId" : null,
+            "customScriptId" : null,
+            "elementAttributes" : 0,
+            "prfdPacketServiceProfileId" : null,
+            "routingLabelId" : "EXAMPLE_RTNG_LBL",
+            "isSubscriber" : 1,
+            "portedType" : 0,
+            "lnpTransitionFlag" : 0,
+            "homeGateway" : "EXAMPLE_GW",
+            "exceptionProfileId" : null,
+            "businessGroupId" : null,
+            "businessUnitId" : null
+        }
+    }
+}
+< 201
+< Location: http://lokiserver.apiary.io/loki/destinations/1-2005553001-1
+< Transaction-Id: 1380080943120
++++++
+< 409
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/destinations"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        }
+    ],
+    "_embedded" : {
+        "ls:destinations" : {
+            "_links" : {
+                "self" : {
+                    "href" : "http://lokiserver.apiary.io/loki/destinations/1-2005553001-1"
+                }
+            },
+            "id" : "1-2005553001-1",
+            "destinationDn" : "+1-2005553001",
+            "extensions" : {
+                "sonusPsx" : {
+                    "destSvcScriptId" : null,
+                    "customScriptId" : null,
+                    "elementAttributes" : 0,
+                    "prfdPacketServiceProfileId" : null,
+                    "routingLabelId" : "EXAMPLE_RTNG_LBL",
+                    "isSubscriber" : 1,
+                    "portedType" : 0,
+                    "lnpTransitionFlag" : 0,
+                    "homeGateway" : "EXAMPLE_GW",
+                    "exceptionProfileId" : null,
+                    "businessGroupId" : null,
+                    "businessUnitId" : null
+                }
+            }
+        }
+    }
+}
++++++
+< 500
+< Transaction-Id: 1380080943120
+< Content-Type: application/json
+{
+    "errorCode" : "**tbd",
+    "summary" : "**tbd Internal Error",
+    "detail" : "[detail here]"
+}
++++++
+< 400
+< Transaction-Id: 1380080943120
+< Content-Type: application/json
+{
+    "errorCode" : "FORMAT_ERROR",
+    "summary" : "Input validation failure",
+    "detail" : "Request validation failed: params.destinationDn does not match pattern^\\+[0-9]+-[0-9]+$: was processing value \"+1-\""
+}
+
+Query Destinations. Responses will include (at a minimum) they fields comprising the unique key for the resource.
+
+##URI Query Parameters
+
+<table border=1>
+    <thead>
+    <th>Parameter</th>
+    <th>Required?</th>
+    <th>Mode</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>destinationDn</td>
+            <td style="text-align: center; font-weight:bold">yes</td>
+            <td>Equal To</td>
+        </tr>
+    </tbody>
+</table>
+GET /destinations{?destinationDn}
+< 200
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/destinations?destinationDn=%2B1-2005553001"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        }
+    ],
+    "_embedded" : {
+        "ls:destinations" : [
+            {
+                "_links" : {
+                    "self" : {
+                        "href" : "http://lokiserver.apiary.io/loki/destinations/1-2005553001-1"
+                    }
+                },
+                "id" : "1-2005553001-1",
+                "destinationDn" : "+1-2005553001",
+                "extensions" : {
+                    "sonusPsx" : {
+                        "destSvcScriptId" : null,
+                        "customScriptId" : null,
+                        "elementAttributes" : 0,
+                        "prfdPacketServiceProfileId" : null,
+                        "routingLabelId" : "ANOTHER_RTNG_LBL",
+                        "isSubscriber" : 0,
+                        "portedType" : 0,
+                        "lnpTransitionFlag" : 0,
+                        "homeGateway" : "ANOTHER_GW",
+                        "exceptionProfileId" : null,
+                        "businessGroupId" : null,
+                        "businessUnitId" : null
+                    }
+                }
+            }
+        ]
+    }
+}
++++++
+< 404
+< Transaction-Id: 1380080943120
+{
+    "errorCode": "ERR_REC_NOT_FOUND",
+    "summary": "Failed to 'Retrieve' entity.",
+    "detail": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" [^] xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" [^] xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n [^] <soapenv:Body>\n <soapenv:Fault>\n <faultcode>soapenv:Server.generalException</faultcode>\n <faultstring></faultstring>\n <detail>\n <ns1:fault href=\"#id0\" xmlns:ns1=\"http://www.sonusnet.com/ems/emsapi/psx/r07_03_06/intf\"/>\n [^] <ns2:exceptionName xmlns:ns2=\"http://xml.apache.org/axis/\">com.sonus.ems.api.psx.r07_03_06.model.ProvApiException</ns2:exceptionName>\n [^] </detail>\n </soapenv:Fault>\n <multiRef id=\"id0\" soapenc:root=\"0\" soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" [^] xsi:type=\"ns3:ProvApiException\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\" [^] xmlns:ns3=\"http://www.sonusnet.com/ems/emsapi/psx/r07_03_06/model\">\n [^] <errorCode xsi:type=\"xsd:string\">ERR_REC_NOT_FOUND</errorCode>\n <message xsi:type=\"xsd:string\">Failed to 'Retrieve' entity.</message>\n <rootCause xsi:type=\"xsd:string\">(ERR_REC_NOT_FOUND) [resource] not found for the given criteria. (rc=17)</rootCause>\n </multiRef>\n </soapenv:Body>\n</soapenv:Envelope>"
+}
++++++
+< 400
+< Transaction-Id: 1380080943120
+< Content-Type: application/json
+{
+    "errorCode" : "FORMAT_ERROR",
+    "summary" : "Input validation failure",
+    "detail" : "Request validation failed: params.destinationDn does not match pattern^\\+[0-9]+-[0-9]+$: was processing value \"+1-\""
+}
+
+
+Update a destination. All fields are optional.
+PUT /destinations/{+id}
+> Content-Type: application/json
+{
+    "extensions" : {
+        "sonusPsx" : {
+            "destSvcScriptId" : null,
+            "customScriptId" : null,
+            "elementAttributes" : 0,
+            "prfdPacketServiceProfileId" : null,
+            "routingLabelId" : "EXAMPLE_RTNG_LBL",
+            "isSubscriber" : 1,
+            "portedType" : 0,
+            "lnpTransitionFlag" : 0,
+            "homeGateway" : "EXAMPLE_GW",
+            "exceptionProfileId" : null,
+            "businessGroupId" : null,
+            "businessUnitId" : null
+        }
+    }
+}
+< 204
+< Transaction-Id: 1380080943120
++++++
+< 404
+< Transaction-Id: 1380080943120
+
+
+Delete a destination.
+DELETE /destinations/{+id}
+< 204
+< Transaction-Id: 1380080943120
++++++
+< 404
+< Transaction-Id: 1380080943120
+
+
+--
+Routes
+##Collection
+
+Supported network elements:
+
+* Sonus PSX
+
+Keys:
+
+* destinationDn
+
+Extension Keys:
+
+* callProcessingElement1Id
+* callProcessingElement2Id
+* callProcessingElement3Id
+* callProcessingElement4Id
+* callProcessingElementType
+* routingType
+* partitionId
+* calltype
+* transmissionMedium
+* userCallType
+* digitType
+* timeRangeProfileId
+* callParamFilterProfileId
+* domainName
+
+Refer to the **Sonus Insight API Programmer Guide** for descriptions, data types, defaults, and allowed values for
+request and response properties under <code>extensions.sonusPsx</code>. Note:
+
+* If the Sonus documentation indicates a data type of integer, short, or long, the value will be numeric in the Loki REST JSON responses.
+* If the Sonus documentation indicates a data type of string, the value will be a string (or null) in the Loki REST JSON responses.
+--
+
+Create a new Route.
+POST /routes
+> Content-Type: application/json
+{
+    "destinationDn" : "+1-2005553001",
+    "extensions" : {
+        "sonusPsx" : {
+	        "callProcessingElement1Id" : null,
+	        "callProcessingElement2Id" : null,
+	        "callProcessingElement3Id" : null,
+	        "callProcessingElement4Id" : null,
+	        "callProcessingElementType" : 0,
+	        "routingType" : 3,
+	        "partitionId" : "EXAMPLE_PARTITION",
+	        "calltype" : 0,
+	        "transmissionMedium" : 0,
+	        "userCallType" : 0,
+	        "digitType" : 2147483647,
+	        "timeRangeProfileId" : "ALL",
+	        "callParamFilterProfileId" : null,
+	        "domainName" : null,
+	        "routingLabelId" : "EXAMPLE_RTNG_LBL"
+        }
+    }
+}
+< 201
+< Location: http://lokiserver.apiary.io/loki/routes/1-----0-3-2005553001-1-EXAMPLE_PARTITION-0-0-0-2147483647-ALL--
+< Transaction-Id: 1380080943120
++++++
+< 409
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/routes"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        }
+    ],
+    "_embedded" : {
+        "ls:routes" : {
+            "_links" : {
+                "self" : {
+                    "href" : "http://lokiserver.apiary.io/loki/routes/1-----0-3-2005553001-1-EXAMPLE_PARTITION-0-0-0-2147483647-ALL--"
+                }
+            },
+            "id" : "1-----0-3-2005553001-1-EXAMPLE_PARTITION-0-0-0-2147483647-ALL--",
+            "destinationDn" : "+1-2005553001",
+            "extensions" : {
+                "sonusPsx" : {
+	                "callProcessingElement1Id" : null,
+	                "callProcessingElement2Id" : null,
+	                "callProcessingElement3Id" : null,
+	                "callProcessingElement4Id" : null,
+	                "callProcessingElementType" : 0,
+	                "routingType" : 3,
+	                "partitionId" : "EXAMPLE_PARTITION",
+	                "calltype" : 0,
+	                "transmissionMedium" : 0,
+	                "userCallType" : 0,
+	                "digitType" : 2147483647,
+	                "timeRangeProfileId" : "ALL",
+	                "callParamFilterProfileId" : null,
+	                "domainName" : null,
+	                "routingLabelId" : "ANOTHER_RTNG_LBL"
+                }
+            }
+        }
+    }
+}
++++++
+< 500
+< Transaction-Id: 1380080943120
+< Content-Type: application/json
+{
+    "errorCode" : "**tbd",
+    "summary" : "**tbd Internal Error",
+    "detail" : "[detail here]"
+}
++++++
+< 400
+< Transaction-Id: 1380080943120
+< Content-Type: application/json
+{
+    "errorCode" : "FORMAT_ERROR",
+    "summary" : "Input validation failure",
+    "detail" : "Request validation failed: params.destinationDn does not match pattern^\\+[0-9]+-[0-9]+$: was processing value \"+1-\""
+}
+
+Query Routes. Responses will include (at a minimum) they fields comprising the unique key for the resource.
+
+##URI Query Parameters
+
+This request supports two modes. In both cases:
+
+* Each parameter is expected to be complete (the match is an "equals" match, with
+no support for wildcards or partial values).
+* A "null" value can be searched for by explicitly including the parameter with no value,
+e.g. "...&callProcessingElement1Id=".
+* If no match is found, the response will be 404 Not Found
+* When one or more matches or found, they will be included in the embedded array _embedded."ls:routes"[].
+
+To retrieve a single route resource given all elements of the key, include **all** of (and only) the following
+parameters in the request (even if some have null values):
+
+* destinationDn
+* callProcessingElement1Id
+* callProcessingElement2Id
+* callProcessingElement3Id
+* callProcessingElement4Id
+* callProcessingElementType
+* routingType
+* partitionId
+* calltype
+* transmissionMedium
+* userCallType
+* digitType
+* timeRangeProfileId
+* callParamFilterProfileId
+* domainName
+
+To retrieve all matching route resources for various search criteria, include one or more of the following
+parameters in the request:
+
+* destinationDn
+* partitionId
+* callProcessingElement1Id
+* callProcessingElement2Id
+* callProcessingElement3Id
+* callProcessingElement4Id
+* routingLabelId
+* callParamFilterProfileId
+* domainName
+GET /routes{?...}
+< 200
+< Content-Type: application/hal+json
+< Transaction-Id: 1380080943120
+{
+        "_links" : {
+            "self" : {
+                "href" : "http://lokiserver.apiary.io/loki/routes?destinationDn=%2B1-2005553001&callProcessingElement1Id=&callProcessingElement2Id=&callProcessingElement3Id=&callProcessingElement4Id=&callProcessingElementType=0&routingType=3&partitionId=EXAMPLE_PARTITION&calltype=0&transmissionMedium=0&userCallType=0&digitType=2147483647&timeRangeProfileId=ALL&callParamFilterProfileId=&domainName="
+            }
+        },
+        "curies" : [
+            {
+                "name" : "ls",
+                "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+                "templated" : true
+            }
+        ],
+        "_embedded" : {
+            "ls:routes" : [
+                {
+                    "_links" : {
+                        "self" : {
+                            "href" : "http://lokiserver.apiary.io/loki/routes/1-----0-3-2005553001-1-EXAMPLE_PARTITION-0-0-0-2147483647-ALL--"
+                        }
+                    },
+                    "id" : "1-----0-3-2005553001-1-EXAMPLE_PARTITION-0-0-0-2147483647-ALL--",
+                    "destinationDn" : "+1-2005553001",
+                    "extensions" : {
+                        "sonusPsx" : {
+    	                    "callProcessingElement1Id" : null,
+        	                "callProcessingElement2Id" : null,
+    	                    "callProcessingElement3Id" : null,
+    	                    "callProcessingElement4Id" : null,
+    	                    "callProcessingElementType" : 0,
+    	                    "routingType" : 3,
+    	                    "partitionId" : "EXAMPLE_PARTITION",
+        	                "calltype" : 0,
+    	                    "transmissionMedium" : 0,
+    	                    "userCallType" : 0,
+    	                    "digitType" : 2147483647,
+    	                    "timeRangeProfileId" : "ALL",
+    	                    "callParamFilterProfileId" : null,
+        	                "domainName" : null,
+    	                    "routingLabelId" : "EXAMPLE_RTNG_LBL"
+                        }
+                    }
+                },
+                {
+                    "_links" : {
+                        "self" : {
+                            "href" : "http://lokiserver.apiary.io/loki/routes/1-4----0-3-2005553001-1-ANOTHER_PARTITION-0-0-0-2147483647-ALL--"
+                        }
+                    },
+                    "id" : "1-4----0-3-2005553001-1-ANOTHER_PARTITION-0-0-0-2147483647-ALL--",
+                    "destinationDn" : "+1-2005553001",
+                    "extensions" : {
+                        "sonusPsx" : {
+    	                    "callProcessingElement1Id" : 4,
+        	                "callProcessingElement2Id" : null,
+    	                    "callProcessingElement3Id" : null,
+    	                    "callProcessingElement4Id" : null,
+    	                    "callProcessingElementType" : 0,
+    	                    "routingType" : 3,
+    	                    "partitionId" : "ANOTHER_PARTITION",
+        	                "calltype" : 0,
+    	                    "transmissionMedium" : 0,
+    	                    "userCallType" : 0,
+    	                    "digitType" : 2147483647,
+    	                    "timeRangeProfileId" : "ALL",
+    	                    "callParamFilterProfileId" : null,
+        	                "domainName" : null,
+    	                    "routingLabelId" : "ANOTHER_RTNG_LBL"
+                        }
+                    }
+                }
+            ]
+        }
+}
++++++
+< 404
+< Transaction-Id: 1380080943120
+{
+    "errorCode": "ERR_REC_NOT_FOUND",
+    "summary": "Failed to 'Retrieve' entity.",
+    "detail": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" [^] xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" [^] xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n [^] <soapenv:Body>\n <soapenv:Fault>\n <faultcode>soapenv:Server.generalException</faultcode>\n <faultstring></faultstring>\n <detail>\n <ns1:fault href=\"#id0\" xmlns:ns1=\"http://www.sonusnet.com/ems/emsapi/psx/r07_03_06/intf\"/>\n [^] <ns2:exceptionName xmlns:ns2=\"http://xml.apache.org/axis/\">com.sonus.ems.api.psx.r07_03_06.model.ProvApiException</ns2:exceptionName>\n [^] </detail>\n </soapenv:Fault>\n <multiRef id=\"id0\" soapenc:root=\"0\" soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\" [^] xsi:type=\"ns3:ProvApiException\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\" [^] xmlns:ns3=\"http://www.sonusnet.com/ems/emsapi/psx/r07_03_06/model\">\n [^] <errorCode xsi:type=\"xsd:string\">ERR_REC_NOT_FOUND</errorCode>\n <message xsi:type=\"xsd:string\">Failed to 'Retrieve' entity.</message>\n <rootCause xsi:type=\"xsd:string\">(ERR_REC_NOT_FOUND) [resource] not found for the given criteria. (rc=17)</rootCause>\n </multiRef>\n </soapenv:Body>\n</soapenv:Envelope>"
+}
++++++
+< 404
+< Transaction-Id: 1380080943120
+{
+    "errorCode": "ERR_REC_NOT_FOUND",
+    "summary": "Internal Error",
+    "detail": "Query returned no records"
+}
++++++
+< 400
+< Transaction-Id: 1380080943120
+< Content-Type: application/json
+{
+    "errorCode" : "FORMAT_ERROR",
+    "summary" : "Input validation failure",
+    "detail" : "Request validation failed: params.destinationDn does not match pattern^\\+[0-9]+-[0-9]+$: was processing value \"+1-\""
+}
+
+
+Update a route. All fields are optional.
+PUT /routes/{+id}
+> Content-Type: application/json
+{
+    "extensions" : {
+        "sonusPsx" : {
+	        "routingLabelId" : "EXAMPLE_RTNG_LBL"
+        }
+    }
+}
+< 204
+< Transaction-Id: 1380080943120
++++++
+< 404
+< Transaction-Id: 1380080943120
+
+
+Delete a route.
+DELETE /routes/{+id}
+< 204
+< Transaction-Id: 1380080943120
++++++
+< 404
+< Transaction-Id: 1380080943120
+
+
+--
+VoIP Users
+##Collection
+
+Supported network elements:
+
+* BroadWorks Application Server
+
+Keys:
+
+* userId
+
+Extension Keys:
+
+* (none)
+--
+
+Create a new VoIP User.
+
+##URI Query Parameters
+
+<table border=1>
+    <thead>
+    <th>Parameter</th>
+    <th>Required?</th>
+    <th>Default</th>
+    <th>Description</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>mode</td>
+            <td style="text-align: center; font-weight:bold">yes</td>
+            <td>prevalidate-and-create</td>
+            <td>Controls execution mode as described in **ref general documentation.<br />
+            Allowed values: [ "prevalidate-only", "prevalidate-and-create", "create-only" ].<br />
+            <b>NOTE: at this time only "create-only" is allowed.</b>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+##Properties
+
+Note: See the JSON Schema (**link TBD) for data types, format, length restrictions, etc.
+
+<table border=1>
+    <thead>
+    <th>Property</th>
+    <th>Required?</th>
+    <th>Default</th>
+    <th>Description</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>customerId</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+            <td>Loki Server customerId (server-generated) of the Customer in which the new VoIP User is to be created.
+            In a default configuration (where a VoIP User is composed of BroadWorks entities only),
+            this property can be omitted if extensions.broadworks.serviceProviderId is populated.</td>
+        </tr>
+        <tr>
+            <td>siteId</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+            <td>Loki Server siteId (server-generated) of the Site in which the new VoIP User is to be created.
+            In a default configuration (where a VoIP User is composed of BroadWorks entities only),
+            this property can be omitted if extensions.broadworks.groupId is populated.</td>
+        </tr>
+        <tr>
+            <td>userId</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>(varies)</td>
+            <td>Full UserID, including @domain. Will be constructed as [phoneNumber]@[Site default domain] if not provided.<br />
+            Note that in BroadWorks, if the domain matches the BroadWorks system default domain, the BroadWorks
+            userId will not contain an @domain portion. In the Loki Server API, the userId will always include
+            @domain.</td>
+        </tr>
+        <tr>
+            <td>phoneNumber</td>
+            <td style="text-align: center">(varies)</td>
+            <td></td>
+            <td>Phone Number.<br />Will be assigned on Customer and/or Group if necessary.<br />
+            Must be E.164 formatted, e.g. +1-2005553001 (the dash is required, after the country code).<br />
+            A value is required for certain TN routines; see documentation for tnRoutine for details.<br />
+        </tr>
+        <tr>
+            <td>tnRoutine</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+            <td>Phone Number (TN) assignment routine.<br />
+            Supported values and impact on other required properties:
+            <table border=1>
+            <thead>
+                <th>tnRoutine</th>
+            <th>phoneNumber Required?</th>
+                <th>extension Required?</th>
+                <th>Description</th>
+            </thead>
+            <tbody>
+            <tr>
+                <td><b>port-no-temp</b></td>
+                <td style="text-align: center; font-weight:bold">yes</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>TN does not exist in the system, and will be assigned automatically at both the Customer and Site levels.</td>
+            </tr>
+            <tr>
+                <td><b>auto</b></td>
+                <td style="text-align: center; font-weight:bold">yes</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>TN may or may not already exist in the system, and will be assigned automatically only as needed.</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="text-align: center; font-weight:bold">yes</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>(default when tnRoutine is empty or omitted)<br />
+                TN must already be available for use; no assignment will be performed.</td>
+            </tr>
+            <tr>
+                <td><b>no-number</b></td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td style="text-align: center; font-weight:bold">yes</td>
+                <td>User will have no TN (extension-only user); phoneNumber must <i>not</i> be present.</td>
+            </tr>
+            <tbody>
+            </table>
+        </tr>
+        <tr>
+            <td>extension</td>
+            <td style="text-align: center">(varies)</td>
+            <td>(varies)</td>
+            <td>Extension. Will be autopopulated if omitted, taking digits off the end of the phone number. The number of
+            digits used is equal to the group's default extension length as configured in BroadWorks.<br />
+            Set to <code>null</code> to create a VoIP User with no extension (note that some Loki Server systems may be configured
+            to disallow empty extensions).<br />
+            A value is required for certain TN routines; see documentation for tnRoutine for details.<br /></td>
+        </tr>
+        <tr>
+            <td>CLID</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>(varies)</td>
+            <td>Calling Line ID Phone Number.<br />Must match phoneNumber or be otherwise available for assignment as a CLID TN.<br />
+            Must be E.164 formatted, e.g. +1-2005553001 (the dash is required, after the country code).<br />
+            If omitted, phoneNumber will be used.</td>
+        </tr>
+        <tr>
+            <td>lastName</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>(varies)</td>
+            <td>Last Name. If omitted, will be autopopulated with the 4th through the last digits of phoneNumber, after stripping the country code.</td>
+        </tr>
+        <tr>
+            <td>firstName</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>(varies)</td>
+            <td>First Name. If omitted, will be autopopulated with the1st 3 digits of phoneNumber, after stripping the country code.</td>
+        </tr>
+        <tr>
+            <td>callingLineIdLastName</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>(varies)</td>
+            <td>Calling Line ID Last Name. If omitted, will be autopopulated with lastName, with disallowed characters (percent, plus, backslash, double-quote, and extended ASCII characters (>= ASCII 128)) stripped as needed).</td>
+        </tr>
+        <tr>
+            <td>callingLineIdFirstName</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>(varies)</td>
+            <td>Calling Line ID First Name. If omitted, will be autopopulated with firstName, with disallowed characters (percent, plus, backslash, double-quote, and extended ASCII characters (>= ASCII 128)) stripped as needed).</td>
+        </tr>
+        <tr>
+            <td>email</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+            <td>E-Mail address</td>
+        </tr>
+        <tr>
+            <td>timeZone</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>Site's time zone</td>
+            <td>Time Zone expressed as a Zone Name from the
+            <a href="https://www.iana.org/time-zones">IANA Time Zone Database</a>, e.g. "America/New_York".<br />
+            If omitted, the Site's time zone will be use=d.</td>
+        </tr>
+        <tr>
+            <td>language</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>Network element's default time zone</td>
+            <td>Language<br />
+            If omitted, the network element's default language (e.g. the BroadWorks system language) will be use=d.</td>
+        </tr>
+        <tr>
+            <td>sharedDeviceName</td>
+            <td style="text-align: center">(varies)</td>
+            <td></td>
+            <td>Device Name of an <i>existing</i> Site-level Device - for Business Line VoIP User Add.<br />
+            Either sharedDeviceName or trunkGroupName must be present with a non-null value, but not both.</td>
+        </tr>
+        <tr>
+            <td>trunkGroupName</td>
+            <td style="text-align: center">(varies)</td>
+            <td></td>
+            <td>Name of an <i>existing</i> Trunk Group in the Site, to add a VoIP User to a Trunk Group.<br />
+            Either sharedDeviceName or trunkGroupName must be present with a non-null value, but not both.</td>
+        </tr>
+        <tr>
+            <td>servicePacks</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+            <td>List of names of service packs to be assigned to the new VoIP User.<br />
+            <b>update for base / add-on</b></td>
+        </tr>
+        <tr>
+            <td style="font-style:italic">role</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+            <td style="font-style:italic">Not Implemented (reserved for future use). This property will be ignored if present in a request.</td>
+        </tr>
+        <tr>
+            <td>services</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+	        <td>The set of services to assign to the new VoIP User, with optional pre-configuration
+	        settings for some services.<br />
+	        Each service name must match a valid (assignable) user service on the network element. Each
+	        service will be assigned to the user a la carte.  If there are global default settings (defined
+	        in the configuration) for any assigned service, these will be applied.<br />
+        	If the service supports configuration, configuration settings can be provided, and these will
+        	override any globally configured defaults for that service. The services that support
+        	configuration, and the supported settings for each, are detailed later in this table.<br />
+	        To assign a service without doing any configuration, set the value to an empty object, e.g.
+	        <code>"services" : { "Remote Office" : { } }</code>.<br />
+            </td>
+        </tr>
+        <tr>
+            <td>services.'Authentication'.*</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+            <td>Configuration settings for the Authentication user service. The table below describes the supported settings.
+            <i>Note: the default values can be overridden by the server configuration, and may not match the values shown below.</i>
+            <table border=1>
+            <thead>
+                <th>Property</th>
+                <th>Required?</th>
+                <th>Default</th>
+                <th>Notes</th>
+            </thead>
+            <tbody>
+            <tr>
+                <td>username</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>Username portion of userId</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>password</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>(see notes)</td>
+                <td>If omitted, the password will be auto-generated based on the rules configured in the server.</td>
+            </tr>
+            <tbody>
+            </table>
+            </td>
+        </tr>
+        <tr>
+            <td>services.'Charge Number'.*</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+            <td>Configuration settings for the Charge Number user service. The table below describes the supported settings.
+            <i>Note: the default values can be overridden by the server configuration, and may not match the values shown below.</i>
+            <table border=1>
+            <thead>
+                <th>Property</th>
+                <th>Required?</th>
+                <th>Default</th>
+                <th>Notes</th>
+            </thead>
+            <tbody>
+            <tr>
+                <td>phoneNumber</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td><i>(see notes)</i></td>
+                <td>When omitted, the Charge Number TN will be assigned according to the following rules:
+                <ol>
+                <li>If the user has a phone number, this will be used.
+                <li>Otherwise, if the Site has a Calling Line ID phone number, this will be used.
+                <li>Otherwise, the Charge Number TN will be left empty.
+                </ol>
+                <br />
+                Set to null to override automatic Charge Number TN allocation and force the Charge Number phone number to be empty.</td>
+            </tr>
+            <tr>
+                <td>tnRoutine</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td><i>empty</i></td>
+                <td>See notes for tnRoutine, above. <b>Note: the "no-number" routine is not allowed here.</b></td>
+            </tr>
+            <tr>
+                <td>useChargeNumberForEnhancedTranslations</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>false</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>sendChargeNumberToNetwork</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>true</td>
+                <td></td>
+            </tr>
+            <tbody>
+            </table>
+            </td>
+        </tr>
+        <tr>
+            <td>services.'Call Forwarding No Answer'.*</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+            <td>Configuration settings for the Call Forwarding No Answer user service. The table below describes the supported settings.
+            <i>Note: the default values can be overridden by the server configuration, and may not match the values shown below.</i>
+            <table border=1>
+            <thead>
+                <th>Property</th>
+                <th>Required?</th>
+                <th>Default</th>
+                <th>Notes</th>
+            </thead>
+            <tbody>
+            <tr>
+                <td>isActive</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>true</td>
+                <td>When true, forwardToPhoneNumber is required.</td>
+            </tr>
+            <tr>
+                <td>forwardToPhoneNumber</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>null</td>
+                <td>Set to null when an empty value is desired.</td>
+            </tr>
+            <tr>
+                <td>numberOfRings</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>3</td>
+                <td>Set to 0 for "None".<br />
+                <i>Note that this value will override services.'Third-Party Voice Mail Support'.noAnswerNumberOfRings if both are present.</td>
+            </tr>
+            <tbody>
+            </table>
+            </td>
+        </tr>
+        <tr>
+            <td>services.'Call Forwarding Not Reachable'.*</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+            <td>Configuration settings for the Call Forwarding Not Reachable user service. The table below describes the supported settings.
+            <i>Note: the default values can be overridden by the server configuration, and may not match the values shown below.</i>
+            <table border=1>
+            <thead>
+                <th>Property</th>
+                <th>Required?</th>
+                <th>Default</th>
+                <th>Notes</th>
+            </thead>
+            <tbody>
+            <tr>
+                <td>isActive</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>true</td>
+                <td>When true, forwardToPhoneNumber is required.</td>
+            </tr>
+            <tr>
+                <td>forwardToPhoneNumber</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>null</td>
+                <td>Set to null when an empty value is desired.</td>
+            </tr>
+            <tbody>
+            </table>
+            </td>
+        </tr>
+        <tr>
+            <td>services.'Third-Party Voice Mail Support'.*</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+            <td>Configuration settings for the Third-Party Voice Mail Support user service. The table below describes the supported settings.
+            <i>Note: the default values can be overridden by the server configuration, and may not match the values shown below.</i>
+            <table border=1>
+            <thead>
+                <th>Property</th>
+                <th>Required?</th>
+                <th>Default</th>
+                <th>Notes</th>
+            </thead>
+            <tbody>
+            <tr>
+                <td>isActive</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>true</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>busyRedirectToVoiceMail</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>true    </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>noAnswerRedirectToVoiceMail</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>true</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>serverSelection</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>'Group Mail Server'</td>
+                <td>Allowed values: {'Group Mail Server'|'User Specific Mail Server'}</td>
+            </tr>
+            <tr>
+                <td>userServer</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>null</td>
+                <td>Set to null when an empty value is desired.</td>
+            </tr>
+            <tr>
+                <td>mailboxIdType</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>'User Or Group Phone Number'</td>
+                <td>Allowed values: {'User Or Group Phone Number'|'URL'}</td>
+            </tr>
+            <tr>
+                <td>other</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>tbd</td>
+                <td>tbd</td>
+            </tr>
+            <tr>
+                <td>noAnswerNumberOfRings</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>3</td>
+                <td>Set to 0 for "None".<br />
+            <i>Note that this value will be overridden by services.'Call Forwarding No Answer'.numberOfRings if both are present.</i>
+            </td>
+            </tr>
+            <tr>
+                <td>mailboxURL</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>null</td>
+                <td>Set to null when an empty value is desired.</td>
+            </tr>
+            <tr>
+                <td>alwaysRedirectToVoiceMail</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>false</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>outOfPrimaryZoneRedirectToVoiceMail</td>
+                <td style="text-align: center; font-weight:bold">no</td>
+                <td>false</td>
+                <td></td>
+            </tr>
+            <tbody>
+            </table>
+            </td>
+        </tr>
+        <tr>
+            <td>extensions</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+            <td>Optional section for network-element-specific properties</td>
+        </tr>
+        <tr>
+            <td>extensions. broadworks</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+            <td>Optional section for BroadWorks-specific properties</td>
+        </tr>
+        <tr>
+            <td>extensions. broadworks. serviceProviderId</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+            <td>ID of the BroadWorks service provider or enterprse in which the underlying BroadWorks user is to be created.
+            In a default configuration (where a VoIP User is composed of BroadWorks entities only),
+            this property can be used instead of customerId (eliminating the need to know the server-generated customerId
+            prior to placing this request).</td>
+        </tr>
+        <tr>
+            <td>extensions. broadworks. groupId</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td></td>
+            <td>ID of the BroadWorks group in which the underlying BroadWorks user is to be created.
+            In a default configuration (where a VoIP User is composed of BroadWorks entities only),
+            this property can be used instead of siteId (eliminating the need to know the server-generated siteId
+            prior to placing this request).</td>
+        </tr>
+
+    </tbody>
+</table>
+
+POST /users{?mode}
+> Content-Type: application/json
+{
+    "customerId" : "a-server-generated-ID",
+    "siteId" : "another-server-generated-ID",
+    "userId" : "2005553001@example.com",
+    "phoneNumber" : "+1-2005553001",
+    "tnRoutine" : "auto",
+    "CLID" : "+1-2005553001",
+    "extension" : "3001",
+    "lastName" : "Smith",
+    "firstName" : "John",
+    "callingLineIdLastName" : "Smith",
+    "callingLineIdFirstName" : "John",
+    "email" : "jsmith@example.com",
+    "timeZone" : "America/New_York",
+    "language" : "English",
+    "sharedDeviceName" : "exampleComIad001",
+    "trunkGroupName" : "myTrunkGroup",
+    "servicePacks" : {
+        "base" : "Standard",
+        "add-on" : [
+            "Executive"
+        ]
+    },
+    "role" : "Executive",
+    "services" : {
+        "Authentication" : {
+            "username" : "2005553001@sip.example.com",
+            "password" : "230A4u$#%f"
+        },
+        "Charge Number" : {
+            "phoneNumber" : "+1-2005554321",
+            "tnRoutine" : "",
+            "useChargeNumberForEnhancedTranslations" : false,
+            "sendChargeNumberToNetwork" : true
+        },
+        "Third-Party Voice Mail Support" : {
+            "isActive" : true,
+            "busyRedirectToVoiceMail" : true,
+            "noAnswerRedirectToVoiceMail" : true,
+            "serverSelection" : "User Specific Mail Server",
+            "userServer" : "4165557000",
+            "mailboxIdType" : "URL",
+            "mailboxURL" : "2005553001@sip.example.com",
+            "noAnswerNumberOfRings" : 4,
+            "alwaysRedirectToVoiceMail" : false,
+            "outOfPrimaryZoneRedirectToVoiceMail" : false
+        },
+        "Call Forwarding No Answer" : {
+            "isActive" : true,
+            "forwardToPhoneNumber" : "+1-2005553101",
+            "numberOfRings" : 4
+        },
+        "Call Forwarding Not Reachable" : {
+            "isActive" : true,
+            "forwardToPhoneNumber" : "+1-2005553101"
+        },
+        "Remote Office" : { }
+    },
+    "extensions" : {
+        "broadworks" : {
+            "serviceProviderId" : "Example Com",
+            "groupId" : "Example Com - North"
+        }
+    }
+}
+< 201
+< Location: http://loki3.apiary.io/loki/users/2005553001%40example.com
+< Transaction-Id: 1380080943120
+< Content-Type: application/hal+json
+{
+    "_links" : {
+        "self" : {
+            "href" : "http://lokiserver.apiary.io/loki/users/2005553001%40example.com"
+        }
+    },
+    "curies" : [
+        {
+            "name" : "ls",
+            "href" : "http://lokiserver.apiary.io/loki/rels/{rel}",
+            "templated" : true
+        }
+    ],
+    "customerId" : "Example Com",
+    "siteId" : "Example Com - North",
+    "phoneNumber" : "+1-2005553001",
+    "extension" : "3001",
+    "CLID" : "+1-2005553001",
+    "userId" : "2005553001@example.com",
+    "portalPassword" : "s8F!9ggo",
+    "firstName" : "John",
+    "lastName" : "Smith",
+    "callingLineIdLastName" : "Smith",
+    "callingLineIdFirstName" : "John",
+    "timeZone" : "America/New_York",
+    "language" : "English",
+    "sharedDeviceName" : "exampleComIad001",
+    "trunkGroupName" : "myTrunkGroup",
+    "services" : {
+        "Authentication" : {
+            "username" : "2005553001@sip.example.com",
+            "password" : "230A4u$#%f"
+        },
+        "Charge Number" : {
+            "phoneNumber" : "+1-2005554321",
+            "useChargeNumberForEnhancedTranslations" : false,
+            "sendChargeNumberToNetwork" : true
+        },
+        "Third-Party Voice Mail Support" : {
+            "isActive" : true,
+            "busyRedirectToVoiceMail" : true,
+            "noAnswerRedirectToVoiceMail" : true,
+            "serverSelection" : "User Specific Mail Server",
+            "userServer" : "4165557000",
+            "mailboxIdType" : "URL",
+            "mailboxURL" : "2005553001@sip.example.com",
+            "noAnswerNumberOfRings" : 4,
+            "alwaysRedirectToVoiceMail" : false,
+            "outOfPrimaryZoneRedirectToVoiceMail" : false
+        },
+        "Call Forwarding No Answer" : {
+            "isActive" : true,
+            "forwardToPhoneNumber" : "+1-2005553101",
+            "numberOfRings" : 4
+        },
+        "Call Forwarding Not Reachable" : {
+            "isActive" : true,
+            "forwardToPhoneNumber" : "+1-2005553101"
+        },
+        "Remote Office" : { }
+    }
+}
++++++
+< 424
+< Content-Type: application/json
+{
+    "errorCode" : "EXTERNAL_API_ERROR",
+    "externalErrorCode" : "4250",
+    "externalErrorSummary" : "[Warning 4250] 1 phone number(s) not added.  Verify that the number(s) are not already assigned.",
+    "externalErrorDetail" : "[Warning 4250] 1 phone number(s) not added.  Verify that the number(s) are not already assigned."
+}
++++++
+< 404
+< Content-Type: application/json
+{
+    "errorCode" : "NOT_FOUND",
+    "externalErrorCode" : "4152",
+    "externalErrorSummary" : "[Error 4152] Group not found: LeoNVB:LeoExample",
+    "externalErrorDetail" : "[Error 4152] Group not found: LeoNVB:LeoExample"
+}
++++++
+< 500
+< Transaction-Id: 1380080943120
+< Content-Type: application/json
+{
+    "errorCode" : "INTERNAL_ERROR,
+    "summary" : "Internal error creating voip-user",
+    "detail" : "The server encountered an error creating the resource. Please contact your administrator for assistance."
+}
++++++
+< 400
+< Content-Type: application/json
+< Transaction-Id: 1380080943120
+{
+    "errorCode" : "FORMAT_ERROR",
+    "summary" : "Input validation failure",
+    "detail" : "Request validation failed: phoneNumber does not match pattern^\\+[0-9]+-[0-9]+$: was processing value \"+1-\""
+}
+
+--
+CHANGELOG
+
+#1.7 / 1.7.1
+Changes for S2052 Loki REST: VoIP User Add validation enhancements:
+
+* Update POST /loki/users to return 422 for invalid attempt to set empty extension
+* Update POST /loki/users to add missing input validation for properties under services.*
+
+Changes for S2051 Loki REST: Further improvements to error handling consistency:
+
+* Updated handling of unexpected errors to follow Loki REST 500 error response format (errorCode, summary, detail)
+
+Changes for S2094 Loki REST: Not possible to assign CFA (and other services) using userAdd REST call
+
+* Clarified that any BroadWorks service can be assigned alacarte, even if it doesn't support configuration
+* Update examples to show assignment of any BroadWorks service on a user, even if Loki REST doesn't support pre-configuring its settings
+
+General:
+
+* Correct documented default value (3) for services.'Call Forwarding No Answer'.numberOfRings and services.'Third-Party Voice Mail Support'.noAnswerNumberOfRings
+* Improved error response for the case where an object contains an invalid property
+* POST /loki/users: clarify that userId must include @domain; enhance the input validation for userId
+* POST /loki/users: clarify that the BroadWorks group's default extension length is used when auto-filling the extension
+* POST /loki/users: note that the "no-number" tnRoutine is not allowed for Charge Number.
+
+#1.6
+Changes for *Functional Description: VoIP Entity Service – Enhancements for BroadWorks Multi-Cluster Support*:
+
+* removed support for POST /loki/voip-users; replaced with POST /loki/users
+* customerId and siteId moved from URI template into request body
+* extensions.broadworks added to request body, with serviceProviderId and groupId
+
+General:
+
+* Change checkmark/x to yes/no for clarity
+* Document 404 response for GET queries on Sonus resources
+* Corrected data type for /loki/routes transmissionMedium property
+* Completed documentation for user service settings in POST /loki/users
+
+#1.5
+Changes for *Functional Description: Alternate API Navigation*:
+
+* Update URIs (self links, Location headers) to reflect changed URI construction
+* Update response bodies to add new properties required to expand URI Template variables
+* Convert POST /loki/customers/{+customerId}/sites/{+siteId}/voip-users 201 response to hal+json
+
+Changes for *Functional Description: Sonus Entity and Utility Services - Subscriber, Destination, and Route Modify Support*:
+
+* Add PUT /loki/{subscribers,destinations,routes}.
+
+Changes for *Functional Description: Sonus Entity and Utility Services - Route Query Enhancements*:
+
+* Update GET /routes{?...} documentation, supported URL query parameters, and 200 OK response body.
+
+Changes for *Functional Description: VoIP User Create - Configure Call Forwarding Not Reachable (BroadWorks)*:
+
+* Update POST /loki/customers/{+customerId}/sites/{+siteId}/voip-users request body to add Call Forwarding Not Reachable service.
+
+General:
+
+* Improve comments.
+* Correct errors in json-schema.
+* Add 404 example for POST /loki/number-translations.
+* Document URL parameters for POST /loki/subscribers.
+* Correct the URI in the Location header in POST /loki/routes 201 Created response, and in embedded ls:routes in 409 Conflict response, and in the 200 OK response to GET /loki/routes{?...}.
+* Further updates to POST /loki/customers/{+customerId}/sites/{+siteId}/voip-users: improve documentation, add timeZone and language; add "+" in URI template parameters to indicate reserved expansion.
+* Correct documentation to mark ?mode as required on POST /loki/voip-users.
+
+--
+
+
+-- JSON Schema Validations --
+
+POST /loki/number-translations
+{ "request" :
+    { "type": "object",
+          "properties": {
+            "sourceDn": { "type": "string", "maxLength" : 48 },
+            "translatedDn": { "type": "string", "maxLength" : 48 }
+          },
+        "required" : ["sourceDn", "translatedDn"]
+    },
+  "response" :
+    { }
+}
+
+PUT /loki/number-translations/{+id}
+{ "request" :
+    { "type": "object",
+        "properties" : {
+                "translatedDn" : {},
+                "extensions" : {}
+            },
+            "additionalProperties" : false
+    },
+    "response" : { }
+}
+
+POST /loki/subscribers
+{ "request" :
+    { "type": "object",
+          "properties": {
+            "subscriberDn": { "type": "string", "maxLength" : 48 }
+          },
+        "required" : ["subscriberDn"]
+    },
+  "response" :
+    { }
+}
+
+PUT /loki/subscribers/{+id}
+{ "request" :
+    { "type": "object",
+          "properties": {
+                "extensions" : {}
+            },
+        "additionalProperties" : false
+    },
+  "response" :
+    { }
+}
+
+POST /loki/destinations
+{ "request" :
+    { "type": "object",
+          "properties": {
+            "destinationDn": { "type": "string", "maxLength" : 48 }
+          },
+        "required" : ["destinationDn"]
+    },
+  "response" :
+    { }
+}
+
+POST /loki/routes
+{ "request" :
+    { "type": "object",
+          "properties": {
+            "destinationDn": { "type": "string", "maxLength" : 48 }
+          },
+        "required" : ["destinationDn"]
+    },
+  "response" :
+    { }
+}
+
+POST /loki/users
+{
+	"request": {
+		"post": {
+			"body": {
+				"id": "voipUsersBody",
+				"type": "object",
+				"additionalProperties": false,
+				"title": "Post schema, body",
+				"properties": {
+					"customerId": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 30
+					},
+					"siteId": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 30
+					},
+					"userId": {
+						"$ref": "/userId"
+					},
+					"phoneNumber": {
+						"$ref": "/bwksDnSchema"
+					},
+					"tnRoutine": {
+						"$ref": "/tnRoutine"
+					},
+					"extension": {
+						"type": [
+							"string",
+							"null"
+						],
+						"minLength": 2,
+						"maxLength": 20,
+						"pattern": "^[0-9]+$"
+					},
+					"CLID": {
+						"$ref": "/bwksDnSchema"
+					},
+					"lastName": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 30
+					},
+					"firstName": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 30
+					},
+					"callingLineIdLastName": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 30,
+						"pattern": "^[\\x20-\\x21\\x23-\\x24\\x26-\\x2A\\x2C-\\x2E\\x30-\\x7F]+$"
+					},
+					"callingLineIdFirstName": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 30,
+						"pattern": "^[\\x20-\\x21\\x23-\\x24\\x26-\\x2A\\x2C-\\x2E\\x30-\\x7F]+$"
+					},
+					"email": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 80,
+						"format": "email"
+					},
+					"timeZone": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 127
+					},
+					"language": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 40
+					},
+					"sharedDeviceName": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 40
+					},
+					"trunkGroupName": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 30
+					},
+					"role": {
+						"type": "any"
+					},
+					"servicePacks": {
+						"type": "object",
+						"additionalProperties": false,
+						"description": "Service Packs that will be assigned to User",
+						"properties": {
+							"base": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 80
+							},
+							"add-on": {
+								"type": "array",
+								"items": {
+									"type": "string",
+									"minLength": 1,
+									"maxLength": 80
+								}
+							}
+						}
+					},
+					"services": {
+						"type": "object",
+						"properties": {
+							"Authentication": {
+								"type": "object",
+								"additionalProperties": false,
+								"properties": {
+									"username": {
+										"type": "string",
+										"minLength": 1,
+										"maxLength": 80
+									},
+									"password": {
+										"type": "string",
+										"minLength": 1,
+										"maxLength": 60
+									}
+								}
+							},
+							"Charge Number": {
+								"type": "object",
+								"additionalProperties": false,
+								"properties": {
+									"phoneNumber": {
+										"extends": [
+											{
+												"$ref": "/bwksDnSchema"
+											},
+											{
+												"type": [
+													"string",
+													"null"
+												]
+											}
+										]
+									},
+									"useChargeNumberForEnhancedTranslations": {
+										"type": "boolean"
+									},
+									"sendChargeNumberToNetwork": {
+										"type": "boolean"
+									},
+									"tnRoutine": {
+										"$ref": "/tnRoutine"
+									}
+								}
+							},
+							"Third-Party Voice Mail Support": {
+								"type": "object",
+								"additionalProperties": false,
+								"properties": {
+									"isActive": {
+										"type": "boolean"
+									},
+									"busyRedirectToVoiceMail": {
+										"type": "boolean"
+									},
+									"noAnswerRedirectToVoiceMail": {
+										"type": "boolean"
+									},
+									"noAnswerNumberOfRings": {
+										"$ref": "/numberOfRings"
+									},
+									"alwaysRedirectToVoiceMail": {
+										"type": "boolean"
+									},
+									"outOfPrimaryZoneRedirectToVoiceMail": {
+										"type": "boolean"
+									},
+									"serverSelection": {
+										"enum": [
+											"Group Mail Server",
+											"User Specific Mail Server"
+										]
+									},
+									"userServer": {
+										"$ref": "/outgoingDnOrSipUri"
+									},
+									"mailboxIdType": {
+										"enum": [
+											"User Or Group Phone Number",
+											"URL"
+										]
+									},
+									"mailboxURL": {
+										"extends": [
+											{
+												"$ref": "/bwksSipUri"
+											},
+											{
+												"type": [
+													"string",
+													"null"
+												]
+											}
+										]
+									}
+								}
+							},
+							"Call Forwarding No Answer": {
+								"type": "object",
+								"additionalProperties": false,
+								"properties": {
+									"isActive": {
+										"type": "boolean"
+									},
+									"forwardToPhoneNumber": {
+										"$ref": "/outgoingDnOrSipUri"
+									},
+									"numberOfRings": {
+										"$ref": "/numberOfRings"
+									}
+								}
+							},
+							"Call Forwarding Not Reachable": {
+								"type": "object",
+								"additionalProperties": false,
+								"properties": {
+									"isActive": {
+										"type": "boolean",
+										"required": false
+									},
+									"forwardToPhoneNumber": {
+										"$ref": "/outgoingDnOrSipUri"
+									}
+								}
+							}
+						}
+					},
+					"extensions": {
+						"type": "object",
+						"additionalProperties": false,
+						"properties": {
+							"broadworks": {
+								"type": "object",
+								"additionalProperties": false,
+								"properties": {
+									"serviceProviderId": {
+										"type": "string",
+										"minLength": 1,
+										"maxLength": 30
+									},
+									"groupId": {
+										"type": "string",
+										"minLength": 1,
+										"maxLength": 30
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"voipUsersURISchema": {
+			"post": {
+				"params": {
+					"id": "voipUsersURL",
+					"type": "object",
+					"additionalProperties": false,
+					"title": "Get schema, params",
+					"description": "Validates mode parameter",
+					"properties": {
+						"mode": {
+							"enum": [
+								"create-only"
+							]
+						}
+					}
+				}
+			}
+		},
+		"userId": {
+			"type": "string",
+			"minLength": 1,
+			"maxLength": 161,
+			"pattern": "^[\\w'#\\$\\%&\\-\\/=\\?;\\.\\|~\\!`\\^\\{\\}][\\w'#\\$\\%&\\-\\/=\\?;\\.\\|~\\!`\\^\\{\\}\\+]{5,79}@[a-zA-Z\\d\\.\\-]{2,80}$"
+		},
+		"bwksDnSchema": {
+			"type": "string",
+			"description": "A formatted TN.",
+			"pattern": "^\\+\\d+-\\d+$",
+			"minLength": 1,
+			"maxLength": 23,
+			"required": false
+		},
+		"tnRoutine": {
+			"enum": [
+				null,
+				"",
+				"port-no-temp",
+				"auto"
+			]
+		},
+		"numberOfRings": {
+			"enum": [
+				0,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20
+			]
+		},
+		"outgoingDnOrSipUri": {
+			"anyOf": [
+				{
+					"id": "E.164 DN",
+					"extends": [
+						{
+							"$ref": "/bwksDnSchema"
+						},
+						{
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					]
+				},
+				{
+					"id": "non-E.164 DN",
+					"$ref": "/bwksNonFormattedDnSchema"
+				},
+				{
+					"id": "SIP URI",
+					"$ref": "/bwksSipUri"
+				}
+			]
+		},
+		"bwksSipUri": {
+			"type": "string",
+			"description": "SIP URI",
+			"pattern": "^[\\+]?[\\w\\-\\.\\!~\\*'\\(\\)]+@[a-zA-Z\\d\\.\\-]+$",
+			"minLength": 1,
+			"maxLength": 161,
+			"required": false
+		}
+	},
+	"response": {}
+}
+
+PUT /loki/users/{+userId}/call-processing-policy
+{
+    "request" : {
+        "type": "object",
+        "properties" : {
+                "extensions" : {
+                    "type": "object",
+                    "properties" : {
+                        "broadworks" : {}
+                    }
+                }
+            }
+        },
+    "response" : { }
+}
