@@ -4,7 +4,7 @@ HOST: http://lokiserver.apiary.io/loki
 
 ---
 
-# This documentation is for the public API, GA release (Loki REST 1.8).
+# This documentation is for the public API, GA release (Loki REST 2.38).
 See also [dev (pre-release) documentation](http://docs.lokidev.apiary.io/)  and [branch (pre-release) documentation](http://docs.lokiserverbranch.apiary.io).
 
 Documentation for the Loki Server REST API.
@@ -1269,8 +1269,7 @@ Extension Keys:
 * (none)
 --
 
-Retrieve the set of Sites matching a specific BroadWorks serviceProviderId and groupId.
-In the default server configuration this will return at most a single Site.
+Retrieve the Site matching a specific BroadWorks serviceProviderId and groupId.
 Can be used to resolve the Loki Server customerId/siteId of a Site when only the
 BroadWorks IDs are known.
 
@@ -1351,6 +1350,199 @@ GET /sites{?extensions.broadworks.serviceProviderId,extensions.broadworks.groupI
 
 
 --
+Site Phone Numbers
+##Collection
+
+Supported network elements:
+
+* BroadWorks Application Server
+
+Keys:
+
+* customerId
+* siteId
+* phoneNumber
+
+Extension Keys:
+
+* (none)
+--
+
+Activate phone number(s) in a Site. The corresponding phone numbers in the underlying BroadWorks group will be set to "activated".
+
+##URI Query Parameters
+
+<table border=1>
+    <thead>
+    <th>Parameter</th>
+    <th>Required?</th>
+    <th>Default</th>
+    <th>Description</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>siteId</td>
+            <td style="text-align: center; font-weight:bold">yes</td>
+            <td>n/a</td>
+            <td>Loki Server ID of the Site containing the phone numbers(s) to be activated.
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+##Request Properties
+
+Note: See the JSON Schema (**link TBD) for data types, format, length restrictions, etc.
+
+<table border=1>
+    <thead>
+    <th>Property</th>
+    <th>Required?</th>
+    <th>Default</th>
+    <th>Description</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>phoneNumbers</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>n/a</td>
+            <td>An array containing the phone numbers and/or phone number ranges to be activated.</td>
+        </tr>
+        <tr>
+            <td>phoneNumbers[]</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>n/a</td>
+            <td>The array entry for an individual phone number consists of a single phone number.<br />
+            The array entry for a phone number range consists of an object. For ranges, the end value is required to be higher than the start value,
+            and both are required to have the same country code.
+            See below for additional details of this object's properties.<br />
+            Note that the E.164 format accepted in the Loki REST API consists of a leading “+”, followed by the country code, followed by a hyphen, followed by the national number (subscriber number), e.g. <code>+1-5554161212</code>.</td>
+        </tr>
+        <tr>
+            <td>phoneNumbers[].start</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>n/a</td>
+            <td>The first phone number in a range (inclusive). Required when activating a range.</td>
+        </tr>
+        <tr>
+            <td>phoneNumbers[].end</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>n/a</td>
+            <td>The last phone number in a range (inclusive). Required when activating a range.</td>
+        </tr>
+    </tbody>
+</table>
+
+A request may contain any combination of individual phone numbers and phone number ranges (in any order), as seen in the example.
+POST /sites/{+siteId}/phone-numbers/activate
+> Content-Type: application/json
+{
+    "phoneNumbers" : [
+        "+1-5553070900",
+        "+1-5553070910",
+        {
+            "start" : "+1-5553071000",
+            "end" : "+1-5553071009"
+        },
+        "+1-5553070876",
+        {
+            "start" : "+1-5553072000",
+            "end" : "+1-5553072003"
+        }
+    ]
+}
+< 204
+< Transaction-Id: 1380080943120
+
+
+Dectivate phone number(s) in a Site. The corresponding phone numbers in the underlying BroadWorks group will be set to "not activated".
+
+##URI Query Parameters
+
+<table border=1>
+    <thead>
+    <th>Parameter</th>
+    <th>Required?</th>
+    <th>Default</th>
+    <th>Description</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>siteId</td>
+            <td style="text-align: center; font-weight:bold">yes</td>
+            <td>n/a</td>
+            <td>Loki Server ID of the Site containing the phone numbers(s) to be deactivated.
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+##Request Properties
+
+Note: See the JSON Schema (**link TBD) for data types, format, length restrictions, etc.
+
+<table border=1>
+    <thead>
+    <th>Property</th>
+    <th>Required?</th>
+    <th>Default</th>
+    <th>Description</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>phoneNumbers</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>n/a</td>
+            <td>An array containing the phone numbers and/or phone number ranges to be deactivated.</td>
+        </tr>
+        <tr>
+            <td>phoneNumbers[]</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>n/a</td>
+            <td>The array entry for an individual phone number consists of a single phone number.<br />
+            The array entry for a phone number range consists of an object. For ranges, the end value is required to be higher than the start value,
+            and both are required to have the same country code.
+            See below for additional details of this object's properties.<br />
+            Note that the E.164 format accepted in the Loki REST API consists of a leading “+”, followed by the country code, followed by a hyphen, followed by the national number (subscriber number), e.g. <code>+1-5554161212</code>.</td>
+        </tr>
+        <tr>
+            <td>phoneNumbers[].start</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>n/a</td>
+            <td>The first phone number in a range (inclusive). Required when deactivating a range.</td>
+        </tr>
+        <tr>
+            <td>phoneNumbers[].end</td>
+            <td style="text-align: center; font-weight:bold">no</td>
+            <td>n/a</td>
+            <td>The last phone number in a range (inclusive). Required when deactivating a range.</td>
+        </tr>
+    </tbody>
+</table>
+
+A request may contain any combination of individual phone numbers and phone number ranges (in any order), as seen in the example.
+POST /sites/{+siteId}/phone-numbers/deactivate
+> Content-Type: application/json
+{
+    "phoneNumbers" : [
+        "+1-5553070900",
+        "+1-5553070910",
+        {
+            "start" : "+1-5553071000",
+            "end" : "+1-5553071009"
+        },
+        "+1-5553070876",
+        {
+            "start" : "+1-5553072000",
+            "end" : "+1-5553072003"
+        }
+    ]
+}
+< 204
+< Transaction-Id: 1380080943120
+
+
+--
 VoIP Users
 ##Collection
 
@@ -1369,7 +1561,7 @@ Extension Keys:
 
 Create a new VoIP User.
 
-Rollback-enabled: No.
+Rollback-enabled: No
 
 ##URI Query Parameters
 
@@ -1429,6 +1621,94 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
             Note that in BroadWorks, if the domain matches the BroadWorks system default domain, the BroadWorks
             userId will not contain an @domain portion. In the Loki Server API, the userId will always include
             @domain.</td>
+        </tr>
+        <tr>
+            <td>userType</td>
+            <td style="text-align: center; font-weight:bold">yes</td>
+            <td></td>
+            <td>Identifies the user type, which is one of “trunking”, “businessLine”, “centrex”, “systemDevice”, “noDevice”.<br />
+            Initially only “trunking” and “businessLine” are supported, and other values will result in an 501 NOT_IMPLEMENTED error.</td>
+        </tr>
+        <tr>
+            <td>accessDevice</td>
+            <td style="text-align: center;">(varies)</td>
+            <td></td>
+            <td>Required when userType is “businessLine” (ignored otherwise).
+                <table border=1>
+                <thead>
+                    <th>Property</th>
+                    <th>Required?</th>
+                    <th>Default</th>
+                    <th>Notes</th>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>name</td>
+                    <td style="text-align: center; font-weight:bold">yes</td>
+                    <td></td>
+                    <td>When userType is “businessLine”, this must contain the name of an existing Site-level device (group-level device in BroadWorks).</td>
+                </tr>
+                <tr>
+                    <td>type</td>
+                    <td style="text-align: center; font-weight:bold">no</td>
+                    <td></td>
+                    <td>Ignored.</td>
+                </tr>
+                <tr>
+                    <td>model</td>
+                    <td style="text-align: center; font-weight:bold">no</td>
+                    <td></td>
+                    <td>Ignored.</td>
+                </tr>
+                <tr>
+                    <td>macAddress</td>
+                    <td style="text-align: center; font-weight:bold">no</td>
+                    <td></td>
+                    <td>Ignored.</td>
+                </tr>
+                <tr>
+                    <td>linePort</td>
+                    <td style="text-align: center; font-weight:bold">no</td>
+                    <td></td>
+                    <td>Ignored.</td>
+                </tr>
+                <tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>trunkGroup</td>
+            <td style="text-align: center">no</td>
+            <td></td>
+            <td>Ignored when userType is not “trunking”.<br />
+                Note that if this entire object is omitted, the user will be created as a trunking user with no assigned trunk group. For the underlying BroadWorks user,
+                omitting this property corresponds to selecting device choice “Trunking” but leaving the Trunking settings blank or “None”, on the User > Profile > Addresses page in the CommPortal.<br />
+                Note that at this time, the Loki Server does not manage the “Alternate Trunk Identity” or “Enterprise Trunk” settings in the “Trunking” section of that page.
+                <table border=1>
+                <thead>
+                    <th>Property</th>
+                    <th>Required?</th>
+                    <th>Default</th>
+                    <th>Notes</th>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>name</td>
+                    <td style="text-align: center; font-weight:bold">no</td>
+                    <td></td>
+                    <td>If present, must contain the name of an existing VoIP Trunk Group in the Site (trunk group in the BroadWorks group).<br />
+                        If omitted (when userType is “trunking”), the trunking user will be created with no assigned trunk group. For the underlying BroadWorks user,
+                        omitting this property corresponds to selecting device choice “Trunking” but leaving the Trunking / Trunk Group set to “None”, on the User > Profile > Addresses page in the CommPortal.</td>
+                </tr>
+                <tr>
+                    <td>linePort</td>
+                    <td style="text-align: center; font-weight:bold">no</td>
+                    <td></td>
+                    <td>Ignored.</td>
+                </tr>
+                <tbody>
+                </table>
+            </td>
         </tr>
         <tr>
             <td>phoneNumber</td>
@@ -1544,20 +1824,6 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
             If omitted, the network element's default language (e.g. the BroadWorks system language) will be use=d.</td>
         </tr>
         <tr>
-            <td>sharedDeviceName</td>
-            <td style="text-align: center">(varies)</td>
-            <td></td>
-            <td>Device Name of an <i>existing</i> Site-level Device - for Business Line VoIP User Add.<br />
-            Either sharedDeviceName or trunkGroupName must be present with a non-null value, but not both.</td>
-        </tr>
-        <tr>
-            <td>trunkGroupName</td>
-            <td style="text-align: center">(varies)</td>
-            <td></td>
-            <td>Name of an <i>existing</i> Trunk Group in the Site, to add a VoIP User to a Trunk Group.<br />
-            Either sharedDeviceName or trunkGroupName must be present with a non-null value, but not both.</td>
-        </tr>
-        <tr>
             <td>servicePacks</td>
             <td style="text-align: center; font-weight:bold">no</td>
             <td></td>
@@ -1610,7 +1876,9 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
                 <td>password</td>
                 <td style="text-align: center; font-weight:bold">no</td>
                 <td>(see notes)</td>
-                <td>If omitted, the password will be auto-generated based on the rules configured in the server.</td>
+                <td>If omitted, the password will be auto-generated based on the sipPassword rules configured in the server.<br />
+                If present, the password will be validated against the sipPassword rules configured in the server.
+                </td>
             </tr>
             <tbody>
             </table>
@@ -1852,12 +2120,39 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
     </tbody>
 </table>
 
+###User Type
+The the accessDevice and trunkGroup values vary depending on the type of user being added (userType). See examples (excerpts from a request body) below.
+#### Business Line User Add
+    ...
+    "userType" : "businessLine",
+    "accessDevice": {
+        "name": "exampleComIad001"
+    },
+    ...
+#### Trunking User Add
+    ...
+    "userType" : "trunking",
+    "trunkGroup": {
+        "name": "exampleTrunk"
+    },
+    ...
+#### Trunking User Add with no assigned Trunk Group
+    ...
+    "userType" : "trunking",
+    "trunkGroup": { },
+    ...
+#### Trunking User Add with no assigned Trunk Group (Alternative)
+    ...
+    "userType" : "trunking",
+    ...
+
 POST /users{?mode}
 > Content-Type: application/json
 {
     "customerId" : "a-server-generated-ID",
     "siteId" : "another-server-generated-ID",
     "userId" : "2005553001@example.com",
+    "userType" : "businessLine",
     "phoneNumber" : "+1-2005553001",
     "tnRoutine" : "auto",
     "CLID" : "+1-2005553001",
@@ -1869,8 +2164,9 @@ POST /users{?mode}
     "email" : "jsmith@example.com",
     "timeZone" : "America/New_York",
     "language" : "English",
-    "sharedDeviceName" : "exampleComIad001",
-    "trunkGroupName" : "myTrunkGroup",
+    "accessDevice": {
+        "name": "exampleComIad001"
+    },
     "servicePacks" : {
         "base" : "Standard",
         "add-on" : [
@@ -1949,8 +2245,6 @@ POST /users{?mode}
     "callingLineIdFirstName" : "John",
     "timeZone" : "America/New_York",
     "language" : "English",
-    "sharedDeviceName" : "exampleComIad001",
-    "trunkGroupName" : "myTrunkGroup",
     "services" : {
         "Authentication" : {
             "username" : "2005553001@sip.example.com",
@@ -2048,6 +2342,7 @@ Rollback-enabled: No; the rollback is dependent on VoIP User Add rollback, which
 If the trunk group add fails before the pilot user is created, the changes will be rolled back. Otherwise, no changes
 will be rolled back.
 
+
 ##URI Query Parameters
 
 <table border=1>
@@ -2143,9 +2438,7 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
             </tr>
         </table>
     </td></tr>
-    <tr><td>pilotUser</td><td>yes</td><td></td><td>Required to contain the properties of a POST /loki/users request, with the following notes conditions:
-        a) sharedDeviceName is not supported, and will be ignored,
-        b) trunkGroupName is required must match the main trunkGroupName in the request (the VoIP Trunk Group's name).
+    <tr><td>pilotUser</td><td>yes</td><td></td><td>Required to contain the properties of a POST /loki/users request with the exception of the following properties: accessDevice, trunkGroup and userType which are disallowed in this request.
     </td></tr>
     <tr><td>department</td><td>no</td><td></td><td>Department name (only Site-level departments are supported, initially).</td></tr>
     <tr><td>capacityManagement</td><td>yes</td><td></td><td>Capacity Management settings</td></tr>
@@ -2188,7 +2481,9 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
     <tr><td>authentication</td><td>yes</td><td></td><td>SIP authentication settings</td></tr>
     <tr><td>authentication. enabled</td><td>yes</td><td></td><td>Enable Authentication</td></tr>
     <tr><td>authentication. username</td><td>(see notes)</td><td></td><td>Authentication User Name. Required if "authentication. enabled" is true.</td></tr>
-    <tr><td>authentication. password</td><td>(see notes)</td><td></td><td>Authentication password. Required if "authentication. enabled" is true.</td></tr>
+    <tr><td>authentication. password</td><td>(see notes)</td><td></td><td>Authentication password. Required if "authentication. enabled" is true.<br />
+    If present, the password will be validated against the sipPassword rules configured in the server.
+    </td></tr>
     <tr><td>hostedUsers</td><td>no</td><td></td><td>Not implemented – will be ignored if present in request.</td></tr>
     <tr><td>identity</td><td>yes</td><td></td><td>Identity settings</td></tr>
     <tr><td>identity. trunkGroupIdentity</td><td>yes</td><td></td><td>Trunk Group Identity settings</td></tr>
@@ -2415,7 +2710,6 @@ POST /customers/{+customerId}/sites/{+siteId}/trunk-groups{?mode}
                 "callingLineIdFirstName": "John",
                 "language": "English",
                 "timeZone": "America/New_York",
-                "trunkGroupName": "ExampleCom Trunk 3001",
                 "services": {
                     "Authentication": {
                         "username": "2405553001@example.com",
@@ -2477,6 +2771,30 @@ POST /customers/{+customerId}/sites/{+siteId}/trunk-groups{?mode}
 --
 CHANGELOG
 
+#2.38
+
+Note the change to version numbers compatible with other Loki products.
+
+Changes for S2018 Loki REST: Add support for Activate/Deactivate TN in BroadWorks:
+* Add POST /sites/{+siteId}/phone-numbers/activate and POST /sites/{+siteId}/phone-numbers/deactivate
+
+Updates for S1945 Loki REST: Add User with Trunk Group "None" (POST /loki/users{?mode}):
+
+* Add userType and accessDevice for
+* Remove sharedDeviceName and trunkGroupName
+* Clarify that services.Authentication.password will be validated against the configured rules
+* Document examples of Business Line and Trunking user adds
+* Update example to show just one userType (businessLine)
+
+Updates for S1945 Loki REST: Add User with Trunk Group "None" (POST /customers/{+customerId}/sites/{+siteId}/trunk-groups{?mode}):
+
+* Clarify that services.Authentication.password will be validated against the configured rules
+* Clarify requirements for pilotUser object
+
+General
+
+* Clarify that GET on /loki/sites returns only a single resource
+* Update json-schemas for various requests
 
 #1.8
 
@@ -2628,7 +2946,37 @@ POST /loki/routes
     { }
 }
 
-POST /loki/users
+GET /loki/sites{?extensions.broadworks.serviceProviderId,extensions.broadworks.groupId}
+{
+	"request": {
+		"get": {
+			"query": {
+				"id": "extensionsBroadworks",
+				"type": "object",
+				"additionalProperties": false,
+				"title": "Get schema, query params",
+				"description": "Validates extensions.broadworks query parameters",
+				"properties": {
+					"extensions.broadworks.serviceProviderId": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 30,
+						"required": true
+					},
+					"extensions.broadworks.groupId": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 30,
+						"required": true
+					}
+				}
+			}
+		}
+	},
+	"response": {}
+}
+
+POST /loki/users{?mode}
 {
 	"request": {
 		"post": {
@@ -2655,7 +3003,7 @@ POST /loki/users
 						"$ref": "/bwksDnSchema"
 					},
 					"tnRoutine": {
-						"$ref": "/tnRoutine"
+						"$ref": "/tnRoutineWithNoNumber"
 					},
 					"extension": {
 						"type": [
@@ -2707,18 +3055,58 @@ POST /loki/users
 						"minLength": 1,
 						"maxLength": 40
 					},
-					"sharedDeviceName": {
-						"type": "string",
-						"minLength": 1,
-						"maxLength": 40
-					},
-					"trunkGroupName": {
-						"type": "string",
-						"minLength": 1,
-						"maxLength": 30
-					},
 					"role": {
 						"type": "any"
+					},
+					"userType": {
+						"enum": [
+							"trunking",
+							"businessLine",
+							"centrex",
+							"systemDevice",
+							"noDevice"
+						],
+						"required": true
+					},
+					"accessDevice": {
+						"type": "object",
+						"additionalProperties": false,
+						"description": "Details of the user's device, for Business Line, IP Centrex, and System Device users.",
+						"properties": {
+							"name": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 40,
+								"required": true
+							},
+							"type": {
+								"type": "any"
+							},
+							"model": {
+								"type": "any"
+							},
+							"macAddress": {
+								"type": "any"
+							},
+							"linePort": {
+								"type": "any"
+							}
+						}
+					},
+					"trunkGroup": {
+						"type": "object",
+						"additionalProperties": false,
+						"description": "Details of the user's trunk group(s), for Trunking users.",
+						"properties": {
+							"name": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 30
+							},
+							"linePort": {
+								"type": "any"
+							}
+						}
 					},
 					"servicePacks": {
 						"type": "object",
@@ -2920,6 +3308,15 @@ POST /loki/users
 			"maxLength": 161,
 			"pattern": "^[\\w'#\\$\\%&\\-\\/=\\?;\\.\\|~\\!`\\^\\{\\}][\\w'#\\$\\%&\\-\\/=\\?;\\.\\|~\\!`\\^\\{\\}\\+]{5,79}@[a-zA-Z\\d\\.\\-]{2,80}$"
 		},
+		"tnRoutineWithNoNumber": {
+			"enum": [
+				null,
+				"",
+				"port-no-temp",
+				"auto",
+				"no-number"
+			]
+		},
 		"bwksDnSchema": {
 			"type": "string",
 			"description": "A formatted TN.",
@@ -2959,6 +3356,14 @@ POST /loki/users
 				19,
 				20
 			]
+		},
+		"bwksNonFormattedDnSchema": {
+			"type": "string",
+			"description": "A non-E.164 formatted TN.",
+			"pattern": "^[\\d\\-]+$",
+			"minLength": 1,
+			"maxLength": 23,
+			"required": false
 		},
 		"outgoingDnOrSipUri": {
 			"anyOf": [
@@ -3012,4 +3417,800 @@ PUT /loki/users/{+userId}/call-processing-policy
             }
         },
     "response" : { }
+}
+
+POST /loki/customers/{+customerId}/sites/{+siteId}/trunk-groups{?mode}
+{
+	"request": {
+		"post": {
+			"body": {
+				"id": "voipTrunkGroupsBody",
+				"type": "object",
+				"required": true,
+				"additionalProperties": false,
+				"title": "Post schema, body",
+				"properties": {
+					"trunkGroupName": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 30,
+						"required": true
+					},
+					"accessDevice": {
+						"type": "object",
+						"required": true,
+						"additionalProperties": false,
+						"properties": {
+							"deviceManagementRoutine": {
+								"enum": [
+									"create",
+									"existing"
+								]
+							},
+							"level": {
+								"enum": [
+									"Site"
+								],
+								"required": true
+							},
+							"deviceType": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 40
+							},
+							"deviceName": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 40,
+								"required": true
+							},
+							"hostname": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 80
+							}
+						}
+					},
+					"pilotUser": {
+						"type": "object",
+						"required": true,
+						"additionalProperties": false,
+						"properties": {
+							"customerId": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 30
+							},
+							"siteId": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 30
+							},
+							"userId": {
+								"$ref": "/userId"
+							},
+							"phoneNumber": {
+								"$ref": "/bwksDnSchema"
+							},
+							"tnRoutine": {
+								"$ref": "/tnRoutineWithNoNumber"
+							},
+							"extension": {
+								"type": [
+									"string",
+									"null"
+								],
+								"minLength": 2,
+								"maxLength": 20,
+								"pattern": "^[0-9]+$"
+							},
+							"CLID": {
+								"$ref": "/bwksDnSchema"
+							},
+							"lastName": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 30
+							},
+							"firstName": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 30
+							},
+							"callingLineIdLastName": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 30,
+								"pattern": "^[\\x20-\\x21\\x23-\\x24\\x26-\\x2A\\x2C-\\x2E\\x30-\\x7F]+$"
+							},
+							"callingLineIdFirstName": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 30,
+								"pattern": "^[\\x20-\\x21\\x23-\\x24\\x26-\\x2A\\x2C-\\x2E\\x30-\\x7F]+$"
+							},
+							"email": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 80,
+								"format": "email"
+							},
+							"timeZone": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 127
+							},
+							"language": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 40
+							},
+							"role": {
+								"type": "any"
+							},
+							"servicePacks": {
+								"type": "object",
+								"additionalProperties": false,
+								"description": "Service Packs that will be assigned to User",
+								"properties": {
+									"base": {
+										"type": "string",
+										"minLength": 1,
+										"maxLength": 80
+									},
+									"add-on": {
+										"type": "array",
+										"items": {
+											"type": "string",
+											"minLength": 1,
+											"maxLength": 80
+										}
+									}
+								}
+							},
+							"services": {
+								"type": "object",
+								"properties": {
+									"Authentication": {
+										"type": "object",
+										"additionalProperties": false,
+										"properties": {
+											"username": {
+												"type": "string",
+												"minLength": 1,
+												"maxLength": 80
+											},
+											"password": {
+												"type": "string",
+												"minLength": 1,
+												"maxLength": 60
+											}
+										}
+									},
+									"Charge Number": {
+										"type": "object",
+										"additionalProperties": false,
+										"properties": {
+											"phoneNumber": {
+												"extends": [
+													{
+														"$ref": "/bwksDnSchema"
+													},
+													{
+														"type": [
+															"string",
+															"null"
+														]
+													}
+												]
+											},
+											"useChargeNumberForEnhancedTranslations": {
+												"type": "boolean"
+											},
+											"sendChargeNumberToNetwork": {
+												"type": "boolean"
+											},
+											"tnRoutine": {
+												"$ref": "/tnRoutine"
+											}
+										}
+									},
+									"Third-Party Voice Mail Support": {
+										"type": "object",
+										"additionalProperties": false,
+										"properties": {
+											"isActive": {
+												"type": "boolean"
+											},
+											"busyRedirectToVoiceMail": {
+												"type": "boolean"
+											},
+											"noAnswerRedirectToVoiceMail": {
+												"type": "boolean"
+											},
+											"noAnswerNumberOfRings": {
+												"$ref": "/numberOfRings"
+											},
+											"alwaysRedirectToVoiceMail": {
+												"type": "boolean"
+											},
+											"outOfPrimaryZoneRedirectToVoiceMail": {
+												"type": "boolean"
+											},
+											"serverSelection": {
+												"enum": [
+													"Group Mail Server",
+													"User Specific Mail Server"
+												]
+											},
+											"userServer": {
+												"$ref": "/outgoingDnOrSipUri"
+											},
+											"mailboxIdType": {
+												"enum": [
+													"User Or Group Phone Number",
+													"URL"
+												]
+											},
+											"mailboxURL": {
+												"extends": [
+													{
+														"$ref": "/bwksSipUri"
+													},
+													{
+														"type": [
+															"string",
+															"null"
+														]
+													}
+												]
+											}
+										}
+									},
+									"Call Forwarding No Answer": {
+										"type": "object",
+										"additionalProperties": false,
+										"properties": {
+											"isActive": {
+												"type": "boolean"
+											},
+											"forwardToPhoneNumber": {
+												"$ref": "/outgoingDnOrSipUri"
+											},
+											"numberOfRings": {
+												"$ref": "/numberOfRings"
+											}
+										}
+									},
+									"Call Forwarding Not Reachable": {
+										"type": "object",
+										"additionalProperties": false,
+										"properties": {
+											"isActive": {
+												"type": "boolean",
+												"required": false
+											},
+											"forwardToPhoneNumber": {
+												"$ref": "/outgoingDnOrSipUri"
+											}
+										}
+									}
+								}
+							},
+							"extensions": {
+								"type": "object",
+								"additionalProperties": false,
+								"properties": {
+									"broadworks": {
+										"type": "object",
+										"additionalProperties": false,
+										"properties": {
+											"serviceProviderId": {
+												"type": "string",
+												"minLength": 1,
+												"maxLength": 30
+											},
+											"groupId": {
+												"type": "string",
+												"minLength": 1,
+												"maxLength": 30
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"department": {
+						"type": "string",
+						"minLength": 1,
+						"maxLength": 50
+					},
+					"capacityManagement": {
+						"type": "object",
+						"required": true,
+						"additionalProperties": false,
+						"properties": {
+							"maxActiveCalls": {
+								"type": "object",
+								"required": true,
+								"additionalProperties": false,
+								"properties": {
+									"total": {
+										"type": "integer",
+										"minimum": 1,
+										"required": true
+									},
+									"incoming": {
+										"type": "integer",
+										"minimum": 1,
+										"maximum": 999999
+									},
+									"outgoing": {
+										"type": "integer",
+										"minimum": 1,
+										"maximum": 999999
+									}
+								}
+							},
+							"burstingMaxActiveCalls": {
+								"type": "object",
+								"required": true,
+								"additionalProperties": false,
+								"properties": {
+									"enabled": {
+										"$ref": "/requiredBoolean"
+									},
+									"total": {
+										"type": "integer",
+										"minimum": 0,
+										"maximum": 999999
+									},
+									"incoming": {
+										"type": "integer",
+										"minimum": 0,
+										"maximum": 999999
+									},
+									"outgoing": {
+										"type": "integer",
+										"minimum": 0,
+										"maximum": 999999
+									}
+								}
+							},
+							"incomingCapacityExceeded": {
+								"type": "object",
+								"required": true,
+								"additionalProperties": false,
+								"properties": {
+									"action": {
+										"$ref": "/trunkingActions"
+									},
+									"forwardAddress": {
+										"$ref": "/outgoingDnOrSipUri"
+									},
+									"rerouteTrunkGroup": {
+										"$ref": "/rerouteTrunkGroup"
+									},
+									"initialCalls": {
+										"type": "integer",
+										"minimum": 0,
+										"required": true
+									},
+									"offsetCalls": {
+										"type": "integer",
+										"minimum": 0,
+										"required": true
+									}
+								}
+							}
+						}
+					},
+					"unreachableDestination": {
+						"type": "object",
+						"required": true,
+						"additionalProperties": false,
+						"properties": {
+							"timeout": {
+								"type": "integer",
+								"minimum": 0,
+								"maximum": 15,
+								"required": true
+							},
+							"action": {
+								"$ref": "/trunkingActions"
+							},
+							"forwardAddress": {
+								"$ref": "/outgoingDnOrSipUri"
+							},
+							"rerouteTrunkGroup": {
+								"$ref": "/rerouteTrunkGroup"
+							}
+						}
+					},
+					"authentication": {
+						"type": "object",
+						"required": true,
+						"additionalProperties": false,
+						"properties": {
+							"enabled": {
+								"$ref": "/requiredBoolean"
+							},
+							"username": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 80
+							},
+							"password": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 60
+							}
+						}
+					},
+					"hostedUsers": {
+						"type": "array"
+					},
+					"identity": {
+						"type": "object",
+						"required": true,
+						"additionalProperties": false,
+						"properties": {
+							"trunkGroupIdentity": {
+								"type": "object",
+								"required": true,
+								"additionalProperties": false,
+								"properties": {
+									"identity": {
+										"$ref": "/bwksSipUri"
+									},
+									"allowTerminationToTrunkGroupIdentity": {
+										"$ref": "/requiredBoolean"
+									},
+									"includeTrunkGroupIdentity": {
+										"$ref": "/requiredBoolean"
+									},
+									"includeTrunkGroupIdentityForNetworkCalls": {
+										"$ref": "/requiredBoolean"
+									}
+								}
+							},
+							"otgDtgIdentity": {
+								"type": "object",
+								"required": true,
+								"additionalProperties": false,
+								"properties": {
+									"identity": {
+										"type": "string",
+										"minLength": 1,
+										"maxLength": 80
+									},
+									"allowTerminationToDtgIdentity": {
+										"$ref": "/requiredBoolean"
+									},
+									"includeDtgIdentity": {
+										"$ref": "/requiredBoolean"
+									},
+									"includeOtgIdentityForNetworkCalls": {
+										"$ref": "/requiredBoolean"
+									}
+								}
+							},
+							"enableNetworkAddressIdentity": {
+								"$ref": "/requiredBoolean"
+							}
+						}
+					},
+					"allowUnscreenedCalls": {
+						"$ref": "/requiredBoolean"
+					},
+					"allowUnscreenedEmergencyCalls": {
+						"$ref": "/requiredBoolean"
+					},
+					"pilotUserCallingLineIdentityPolicy": {
+						"enum": [
+							"All Originating Calls",
+							"Unscreened Originating Calls",
+							"No Calls"
+						],
+						"required": true
+					},
+					"pilotUserChargeNumberPolicy": {
+						"enum": [
+							"All Originating Calls",
+							"Unscreened Originating Calls",
+							"No Calls"
+						],
+						"required": true
+					},
+					"callForwardingAlways": {
+						"type": "object",
+						"additionalProperties": false,
+						"properties": {
+							"action": {
+								"$ref": "/trunkingActions"
+							},
+							"forwardAddress": {
+								"$ref": "/outgoingDnOrSipUri"
+							},
+							"rerouteTrunkGroup": {
+								"$ref": "/rerouteTrunkGroup"
+							}
+						}
+					},
+					"peeringDomain": {
+						"type": "object",
+						"required": true,
+						"additionalProperties": false,
+						"properties": {
+							"domainName": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 80
+							},
+							"routeToPeeringDomain": {
+								"$ref": "/requiredBoolean"
+							}
+						}
+					},
+					"trunkGroupPrefix": {
+						"type": "object",
+						"required": true,
+						"additionalProperties": false,
+						"properties": {
+							"enabled": {
+								"$ref": "/requiredBoolean"
+							},
+							"prefix": {
+								"type": "string",
+								"minLength": 1,
+								"maxLength": 15
+							}
+						}
+					},
+					"advancedReroute": {
+						"type": "object",
+						"required": true,
+						"additionalProperties": false,
+						"properties": {
+							"enabled": {
+								"$ref": "/requiredBoolean"
+							},
+							"sendContinuousOptionsMessage": {
+								"$ref": "/requiredBoolean"
+							},
+							"continuousOptionsSendingInterval": {
+								"type": "integer",
+								"minimum": 30,
+								"maximum": 86400,
+								"required": true
+							},
+							"failureOptionsSendingInterval": {
+								"type": "integer",
+								"minimum": 10,
+								"maximum": 86400,
+								"required": true
+							},
+							"failureThresholdCounter": {
+								"type": "integer",
+								"minimum": 1,
+								"maximum": 60,
+								"required": true
+							},
+							"successThresholdCounter": {
+								"type": "integer",
+								"minimum": 1,
+								"maximum": 60,
+								"required": true
+							},
+							"inviteFailureThresholdCounter": {
+								"type": "integer",
+								"minimum": 1,
+								"maximum": 60,
+								"required": true
+							},
+							"inviteFailureThresholdWindow": {
+								"type": "integer",
+								"minimum": 30,
+								"maximum": 240,
+								"required": true
+							}
+						}
+					},
+					"pilotUserCallingLineAssertedIdentityPolicy": {
+						"type": "object",
+						"required": true,
+						"additionalProperties": false,
+						"properties": {
+							"useTrunkGroupCallingLineAssertedIdentityPolicy": {
+								"$ref": "/requiredBoolean"
+							},
+							"callingLineAssertedIdentityPolicy": {
+								"enum": [
+									"All Originating Calls",
+									"Unscreened Originating Calls"
+								],
+								"required": true
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"requiredBoolean": {
+			"type": "boolean",
+			"required": true
+		},
+		"trunkingActions": {
+			"enum": [
+				"Forward",
+				"Reroute"
+			]
+		},
+		"bwksNonFormattedDnSchema": {
+			"type": "string",
+			"description": "A non-E.164 formatted TN.",
+			"pattern": "^[\\d\\-]+$",
+			"minLength": 1,
+			"maxLength": 23,
+			"required": false
+		},
+		"outgoingDnOrSipUri": {
+			"anyOf": [
+				{
+					"id": "E.164 DN",
+					"extends": [
+						{
+							"$ref": "/bwksDnSchema"
+						},
+						{
+							"type": [
+								"string",
+								"null"
+							]
+						}
+					]
+				},
+				{
+					"id": "non-E.164 DN",
+					"$ref": "/bwksNonFormattedDnSchema"
+				},
+				{
+					"id": "SIP URI",
+					"$ref": "/bwksSipUri"
+				}
+			]
+		},
+		"rerouteTrunkGroup": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"siteId": {
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 30
+				},
+				"trunkGroupName": {
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 30
+				}
+			}
+		},
+		"bwksSipUri": {
+			"type": "string",
+			"description": "SIP URI",
+			"pattern": "^[\\+]?[\\w\\-\\.\\!~\\*'\\(\\)]+@[a-zA-Z\\d\\.\\-]+$",
+			"minLength": 1,
+			"maxLength": 161,
+			"required": false
+		}
+	},
+	"response": {}
+}
+
+POST /loki/sites/{+siteId}/phone-numbers/activate
+{
+	"request": {
+		"post": {
+			"body": {
+				"id": "voipTNActivationBody",
+				"type": "object",
+				"required": true,
+				"additionalProperties": false,
+				"title": "Post schema, body",
+				"properties": {
+					"phoneNumbers": {
+						"type": "array",
+						"items": {
+							"anyOf": [
+								{
+									"id": "E.164 DN",
+									"$ref": "/bwksDnSchema"
+								},
+								{
+									"id": "TN Range",
+									"type": "object",
+									"additionalProperties": false,
+									"properties": {
+										"start": {
+											"$ref": "/bwksDnSchema"
+										},
+										"end": {
+											"$ref": "/bwksDnSchema"
+										}
+									}
+								}
+							]
+						}
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"bwksDnSchema": {
+			"type": "string",
+			"description": "A formatted TN.",
+			"pattern": "^\\+\\d+-\\d+$",
+			"minLength": 1,
+			"maxLength": 23,
+			"required": false
+		}
+	},
+	"response": {}
+}
+
+POST /loki/sites/{+siteId}/phone-numbers/deactivate
+{
+	"request": {
+		"post": {
+			"body": {
+				"id": "voipTNActivationBody",
+				"type": "object",
+				"required": true,
+				"additionalProperties": false,
+				"title": "Post schema, body",
+				"properties": {
+					"phoneNumbers": {
+						"type": "array",
+						"items": {
+							"anyOf": [
+								{
+									"id": "E.164 DN",
+									"$ref": "/bwksDnSchema"
+								},
+								{
+									"id": "TN Range",
+									"type": "object",
+									"additionalProperties": false,
+									"properties": {
+										"start": {
+											"$ref": "/bwksDnSchema"
+										},
+										"end": {
+											"$ref": "/bwksDnSchema"
+										}
+									}
+								}
+							]
+						}
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"bwksDnSchema": {
+			"type": "string",
+			"description": "A formatted TN.",
+			"pattern": "^\\+\\d+-\\d+$",
+			"minLength": 1,
+			"maxLength": 23,
+			"required": false
+		}
+	},
+	"response": {}
 }
