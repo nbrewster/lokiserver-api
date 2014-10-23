@@ -1,29 +1,24 @@
 HOST: http://lokiserver.apiary.io/loki
 
---- Loki Server ---
+--- LWS-REST ---
 
 ---
 
-# This documentation is for the public API, GA release (Loki REST 2.38).
+# This documentation is for the public API, GA release (LWS-REST 2.38).
 See also [dev (pre-release) documentation](http://docs.lokidev.apiary.io/)  and [branch (pre-release) documentation](http://docs.lokiserverbranch.apiary.io).
 
-Documentation for the Loki Server REST API.
-
-Below is (work in progress) documentation describing the the Loki 3.0 API.
+Documentation for the Loki Provisioning LWS-REST API.
 
 #General
 
 At this time, the application/hal+json content type is supported in request and response bodies.
 [TODO: add references / explanations of HAL]
 
-**Note: all references to <code>lokiserver.apiary.io</code> are for example purposes only. In a deployed Loki Server
-these will be references to the Loki REST API host.**
-
-**TBD: add HAL notes. Note (at least initially) in the response bodies, _links.self.href matches
-the URI submitted by the client, including any query parameters.**
+**Note: all references to <code>lokiserver.apiary.io</code> are for example purposes only. In a Loki Provisioning deployment
+these will be references to the Loki Provisioning API host.**
 
 ## URI Templates
-Refer to https://tools.ietf.org/html/rfc6570 for details on URI Templates. Not that Loki REST
+Refer to https://tools.ietf.org/html/rfc6570 for details on URI Templates. Not that LWS-REST
 uses reserved characters (i.e. ":") in some URI Template variables, thus the request templates
 use the "{+id}" format - see additional detail at https://tools.ietf.org/html/rfc6570#section-3.2.3.
 
@@ -130,8 +125,8 @@ Extension Keys:
 Refer to the **Sonus Insight API Programmer Guide** for descriptions, data types, defaults, and allowed values for
 request and response properties under <code>extensions.sonusPsx</code>. Note:
 
-* If the Sonus documentation indicates a data type of integer, short, or long, the value will be numeric in the Loki REST JSON responses.
-* If the Sonus documentation indicates a data type of string, the value will be a string (or null) in the Loki REST JSON responses.
+* If the Sonus documentation indicates a data type of integer, short, or long, the value will be numeric in the LWS-REST JSON responses.
+* If the Sonus documentation indicates a data type of string, the value will be a string (or null) in the LWS-REST JSON responses.
 --
 
 Create a new Number Translation.
@@ -417,8 +412,8 @@ Extension Keys:
 Refer to the **Sonus Insight API Programmer Guide** for descriptions, data types, defaults, and allowed values for
 request and response properties under <code>extensions.sonusPsx</code>. Note:
 
-* If the Sonus documentation indicates a data type of integer, short, or long, the value will be numeric in the Loki REST JSON responses.
-* If the Sonus documentation indicates a data type of string, the value will be a string (or null) in the Loki REST JSON responses.
+* If the Sonus documentation indicates a data type of integer, short, or long, the value will be numeric in the LWS-REST JSON responses.
+* If the Sonus documentation indicates a data type of string, the value will be a string (or null) in the LWS-REST JSON responses.
 --
 
 
@@ -731,8 +726,8 @@ Extension Keys:
 Refer to the **Sonus Insight API Programmer Guide** for descriptions, data types, defaults, and allowed values for
 request and response properties under <code>extensions.sonusPsx</code>. Note:
 
-* If the Sonus documentation indicates a data type of integer, short, or long, the value will be numeric in the Loki REST JSON responses.
-* If the Sonus documentation indicates a data type of string, the value will be a string (or null) in the Loki REST JSON responses.
+* If the Sonus documentation indicates a data type of integer, short, or long, the value will be numeric in the LWS-REST JSON responses.
+* If the Sonus documentation indicates a data type of string, the value will be a string (or null) in the LWS-REST JSON responses.
 --
 
 Create a new Destination.
@@ -977,8 +972,8 @@ Extension Keys:
 Refer to the **Sonus Insight API Programmer Guide** for descriptions, data types, defaults, and allowed values for
 request and response properties under <code>extensions.sonusPsx</code>. Note:
 
-* If the Sonus documentation indicates a data type of integer, short, or long, the value will be numeric in the Loki REST JSON responses.
-* If the Sonus documentation indicates a data type of string, the value will be a string (or null) in the Loki REST JSON responses.
+* If the Sonus documentation indicates a data type of integer, short, or long, the value will be numeric in the LWS-REST JSON responses.
+* If the Sonus documentation indicates a data type of string, the value will be a string (or null) in the LWS-REST JSON responses.
 --
 
 Create a new Route.
@@ -1270,7 +1265,7 @@ Extension Keys:
 --
 
 Retrieve the Site matching a specific BroadWorks serviceProviderId and groupId.
-Can be used to resolve the Loki Server customerId/siteId of a Site when only the
+Can be used to resolve the LWS-REST customerId/siteId of a Site when only the
 BroadWorks IDs are known.
 
 ##URI Query Parameters
@@ -1384,7 +1379,7 @@ Activate phone number(s) in a Site. The corresponding phone numbers in the under
             <td>siteId</td>
             <td style="text-align: center; font-weight:bold">yes</td>
             <td>n/a</td>
-            <td>Loki Server ID of the Site containing the phone numbers(s) to be activated.
+            <td>LWS-REST ID of the Site containing the phone numbers(s) to be activated.
             </td>
         </tr>
     </tbody>
@@ -1416,7 +1411,7 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
             The array entry for a phone number range consists of an object. For ranges, the end value is required to be higher than the start value,
             and both are required to have the same country code.
             See below for additional details of this object's properties.<br />
-            Note that the E.164 format accepted in the Loki REST API consists of a leading “+”, followed by the country code, followed by a hyphen, followed by the national number (subscriber number), e.g. <code>+1-5554161212</code>.</td>
+            Note that the E.164 format accepted in the LWS-REST API consists of a leading “+”, followed by the country code, followed by a hyphen, followed by the national number (subscriber number), e.g. <code>+1-5554161212</code>.</td>
         </tr>
         <tr>
             <td>phoneNumbers[].start</td>
@@ -1471,7 +1466,7 @@ Dectivate phone number(s) in a Site. The corresponding phone numbers in the unde
             <td>siteId</td>
             <td style="text-align: center; font-weight:bold">yes</td>
             <td>n/a</td>
-            <td>Loki Server ID of the Site containing the phone numbers(s) to be deactivated.
+            <td>LWS-REST ID of the Site containing the phone numbers(s) to be deactivated.
             </td>
         </tr>
     </tbody>
@@ -1503,7 +1498,7 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
             The array entry for a phone number range consists of an object. For ranges, the end value is required to be higher than the start value,
             and both are required to have the same country code.
             See below for additional details of this object's properties.<br />
-            Note that the E.164 format accepted in the Loki REST API consists of a leading “+”, followed by the country code, followed by a hyphen, followed by the national number (subscriber number), e.g. <code>+1-5554161212</code>.</td>
+            Note that the E.164 format accepted in the LWS-REST API consists of a leading “+”, followed by the country code, followed by a hyphen, followed by the national number (subscriber number), e.g. <code>+1-5554161212</code>.</td>
         </tr>
         <tr>
             <td>phoneNumbers[].start</td>
@@ -1601,7 +1596,7 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
             <td>customerId</td>
             <td style="text-align: center; font-weight:bold">no</td>
             <td></td>
-            <td>Loki Server customerId (server-generated) of the Customer in which the new VoIP User is to be created.
+            <td>LWS-REST customerId (server-generated) of the Customer in which the new VoIP User is to be created.
             In a default configuration (where a VoIP User is composed of BroadWorks entities only),
             this property can be omitted if extensions.broadworks.serviceProviderId is populated.</td>
         </tr>
@@ -1609,7 +1604,7 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
             <td>siteId</td>
             <td style="text-align: center; font-weight:bold">no</td>
             <td></td>
-            <td>Loki Server siteId (server-generated) of the Site in which the new VoIP User is to be created.
+            <td>LWS-REST siteId (server-generated) of the Site in which the new VoIP User is to be created.
             In a default configuration (where a VoIP User is composed of BroadWorks entities only),
             this property can be omitted if extensions.broadworks.groupId is populated.</td>
         </tr>
@@ -1619,7 +1614,7 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
             <td>(varies)</td>
             <td>Full UserID, including @domain. Will be constructed as [phoneNumber]@[Site default domain] if not provided.<br />
             Note that in BroadWorks, if the domain matches the BroadWorks system default domain, the BroadWorks
-            userId will not contain an @domain portion. In the Loki Server API, the userId will always include
+            userId will not contain an @domain portion. In the LWS-REST API, the userId will always include
             @domain.</td>
         </tr>
         <tr>
@@ -1683,7 +1678,7 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
             <td>Ignored when userType is not “trunking”.<br />
                 Note that if this entire object is omitted, the user will be created as a trunking user with no assigned trunk group. For the underlying BroadWorks user,
                 omitting this property corresponds to selecting device choice “Trunking” but leaving the Trunking settings blank or “None”, on the User > Profile > Addresses page in the CommPortal.<br />
-                Note that at this time, the Loki Server does not manage the “Alternate Trunk Identity” or “Enterprise Trunk” settings in the “Trunking” section of that page.
+                Note that at this time, the LWS-REST does not manage the “Alternate Trunk Identity” or “Enterprise Trunk” settings in the “Trunking” section of that page.
                 <table border=1>
                 <thead>
                     <th>Property</th>
@@ -1766,7 +1761,7 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
             <td>(varies)</td>
             <td>Extension. Will be autopopulated if omitted, taking digits off the end of the phone number. The number of
             digits used is equal to the group's default extension length as configured in BroadWorks.<br />
-            Set to <code>null</code> to create a VoIP User with no extension (note that some Loki Server systems may be configured
+            Set to <code>null</code> to create a VoIP User with no extension (note that some LWS-REST systems may be configured
             to disallow empty extensions).<br />
             A value is required for certain TN routines; see documentation for tnRoutine for details.<br /></td>
         </tr>
@@ -2366,7 +2361,7 @@ will be rolled back.
             <td>customerId</td>
             <td style="text-align: center; font-weight:bold">yes</td>
             <td>n/a</td>
-            <td>Loki Server customerId (server-generated) of the Customer in which the new VoIP Trunk Group is to be created.
+            <td>LWS-REST customerId (server-generated) of the Customer in which the new VoIP Trunk Group is to be created.
             Note this can be resolved from the BroadWorks IDs via GET /loki/sites{?extensions.broadworks.serviceProviderId,extensions.broadworks.groupId}.
             </td>
         </tr>
@@ -2374,7 +2369,7 @@ will be rolled back.
             <td>siteId</td>
             <td style="text-align: center; font-weight:bold">yes</td>
             <td>n/a</td>
-            <td>Loki Server siteId (server-generated) of the Site in which the new VoIP Trunk Group is to be created.
+            <td>LWS-REST siteId (server-generated) of the Site in which the new VoIP Trunk Group is to be created.
             Note this can be resolved from the BroadWorks IDs via GET /loki/sites{?extensions.broadworks.serviceProviderId,extensions.broadworks.groupId}.
             </td>
         </tr>
@@ -2775,10 +2770,10 @@ CHANGELOG
 
 Note the change to version numbers compatible with other Loki products.
 
-Changes for S2018 Loki REST: Add support for Activate/Deactivate TN in BroadWorks:
+Changes for S2018 LWS-REST: Add support for Activate/Deactivate TN in BroadWorks:
 * Add POST /sites/{+siteId}/phone-numbers/activate and POST /sites/{+siteId}/phone-numbers/deactivate
 
-Updates for S1945 Loki REST: Add User with Trunk Group "None" (POST /loki/users{?mode}):
+Updates for S1945 LWS-REST: Add User with Trunk Group "None" (POST /loki/users{?mode}):
 
 * Add userType and accessDevice for
 * Remove sharedDeviceName and trunkGroupName
@@ -2786,7 +2781,7 @@ Updates for S1945 Loki REST: Add User with Trunk Group "None" (POST /loki/users{
 * Document examples of Business Line and Trunking user adds
 * Update example to show just one userType (businessLine)
 
-Updates for S1945 Loki REST: Add User with Trunk Group "None" (POST /customers/{+customerId}/sites/{+siteId}/trunk-groups{?mode}):
+Updates for S1945 LWS-REST: Add User with Trunk Group "None" (POST /customers/{+customerId}/sites/{+siteId}/trunk-groups{?mode}):
 
 * Clarify that services.Authentication.password will be validated against the configured rules
 * Clarify requirements for pilotUser object
@@ -2798,25 +2793,25 @@ General
 
 #1.8
 
-Changes for S1896 Loki REST: BroadWorks Trunk Group Add (excludes Genband support):
+Changes for S1896 LWS-REST: BroadWorks Trunk Group Add (excludes Genband support):
 
 * Added GET /loki/sites{?extensions.broadworks.serviceProviderId,extensions.broadworks.groupId}
 * Added POST /loki/customers/{+customerId}/sites/{+siteId}/trunk-groups{?mode}
 
 #1.7 / 1.7.1
-Changes for S2052 Loki REST: VoIP User Add validation enhancements:
+Changes for S2052 LWS-REST: VoIP User Add validation enhancements:
 
 * Update POST /loki/users to return 422 for invalid attempt to set empty extension
 * Update POST /loki/users to add missing input validation for properties under services.*
 
-Changes for S2051 Loki REST: Further improvements to error handling consistency:
+Changes for S2051 LWS-REST: Further improvements to error handling consistency:
 
-* Updated handling of unexpected errors to follow Loki REST 500 error response format (errorCode, summary, detail)
+* Updated handling of unexpected errors to follow LWS-REST 500 error response format (errorCode, summary, detail)
 
-Changes for S2094 Loki REST: Not possible to assign CFA (and other services) using userAdd REST call
+Changes for S2094 LWS-REST: Not possible to assign CFA (and other services) using userAdd REST call
 
 * Clarified that any BroadWorks service can be assigned alacarte, even if it doesn't support configuration
-* Update examples to show assignment of any BroadWorks service on a user, even if Loki REST doesn't support pre-configuring its settings
+* Update examples to show assignment of any BroadWorks service on a user, even if LWS-REST doesn't support pre-configuring its settings
 
 General:
 
