@@ -80,6 +80,10 @@ For example:
 This applies for ALL LWS-REST requests.<br/>
 <b>Note</b>: Using BroadWorks Service labels instead of their actual values will result in un-expected behaviour.
 
+#Limitations
+1. LWS-REST will not convert BroadWorks callingLineIdPhoneNumber (CLID) into E.164 format when retrieving information from BroadWorks.
+
+
 ## URI Templates
 Refer to https://tools.ietf.org/html/rfc6570 for details on URI Templates. Not that LWS-REST
 uses reserved characters (i.e. ":") in some URI Template variables, thus the request templates
@@ -2449,7 +2453,7 @@ POST /customers/{+customerId}/sites{?mode}
     "customerId": "Example Com",
     "siteId": "Example Com - North",
     "callingLineId" : {
-            "name": "ExampleComNorth",
+            "name": "ExampleComNorth"
     },
     "extensions" : {
         "broadworks": {
@@ -2796,6 +2800,7 @@ Site Services
 
 Supported network elements:
 
+* LWS-SOAP
 * BroadWorks Application Server
 
 Keys:
@@ -2891,14 +2896,14 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
                                             <td>firstName</td>
                                             <td style="text-align: center;">no</td>
                                             <td>n/a</td>
-                                            <td>Calling Line ID First Name.<br /> 
+                                            <td>Calling Line ID First Name.<br />
                                             If not present in the request it will be copied from the profile.name.</td>
                                         </tr>
                                         <tr>
                                             <td>lastName</td>
                                             <td style="text-align: center;">no</td>
                                             <td>n/a</td>
-                                            <td>Calling Line ID Last Name.<br /> 
+                                            <td>Calling Line ID Last Name.<br />
                                             If not present in the request it will be copied from the profile.name.</td>
                                         </tr>
                                         <tr>
@@ -3087,7 +3092,7 @@ PUT /customers/{+customerId}/sites/{+siteId}/services/Voice%20Portal
             "firstName": "CLID first name",
             "lastName": "CLID last name"
         }
-    }        
+    }
 }
 < 204
 < Transaction-Id: 1380080943120
@@ -3936,6 +3941,7 @@ VoIP Users
 
 Supported network elements:
 
+* LWS-SOAP
 * BroadWorks Application Server
 
 Keys:
@@ -4098,8 +4104,8 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
                     When userType is “businessLine” this property is required and must contain the name of an existing Site-level device (group-level device in BroadWorks).<br />
                     When userType is "ATA" and accessDevice.deviceManagementRoutine has "existing" value (or it is omitted) this property is required and must match an existing Site-level device (group-level device in BroadWorks).<br />
                     When userType is “hostedPbx”, if present this property must be a valid deviceName that doesn't match an existing device in BroadWorks.<br />
-                    If this property is omitted, it will be auto generated in the following cases:<br /> 
-                    •	userType is “hostedPbx”<br /> 
+                    If this property is omitted, it will be auto generated in the following cases:<br />
+                    •	userType is “hostedPbx”<br />
                     •	userType is “ATA” and accessDevice. deviceManagementRoutine is “create”
                     </td>
                 </tr>
@@ -4294,7 +4300,7 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
                 </thead>
                 <tbody>
                 <tr>
-                    <td>Not required.<br /> 
+                    <td>Not required.<br />
                     If omitted, will be autopopulated with the 4th through the last digits of phoneNumber, after stripping the country code.</td>
                     <td>Required</td>
                 </tr>
@@ -4315,7 +4321,7 @@ Note: See the JSON Schema (**link TBD) for data types, format, length restrictio
                 </thead>
                 <tbody>
                 <tr>
-                    <td>Not required.<br /> 
+                    <td>Not required.<br />
                     If omitted, will be autopopulated with the 1st 3 digits of phoneNumber, after stripping the country code.</td>
                     <td>Required</td>
                 </tr>
@@ -4813,7 +4819,7 @@ Note: The default (legacy) request response contains all the properties sent in 
     </tbody>
 </table>
 
-For the “hostedPbx”, "businessLine" and "ATA" user type the response has an _embedded.ls:site-devices property that contains a 
+For the “hostedPbx”, "businessLine" and "ATA" user type the response has an _embedded.ls:site-devices property that contains a
 HAL representation of the created device with the following properties described in the table below.<br />
 <b>Note</b>: _embedded.ls:site-devices property is present in the response only when using "Alternate" process of POST /loki/users{?mode}.
 <table border=1>
@@ -5109,7 +5115,9 @@ POST /users{?mode}
     "externalErrorSummary" : "[Error 4152] Group not found: LeoNVB:LeoExample",
     "externalErrorDetail" : "[Error 4152] Group not found: LeoNVB:LeoExample"
 }
-Or
++++++
+< 404
+< Content-Type: application/json
 {
     "errorCode": "NOT_FOUND",
     "summary": "The requested resource does not exist",
@@ -5120,7 +5128,7 @@ Or
 < Transaction-Id: 1380080943120
 < Content-Type: application/json
 {
-    "errorCode" : "INTERNAL_ERROR,
+    "errorCode" : "INTERNAL_ERROR",
     "summary" : "Internal error creating voip-user",
     "detail" : "The server encountered an error creating the resource. Please contact your administrator for assistance."
 }
@@ -5277,10 +5285,10 @@ PUT /users/{+userId}/services/Alternate%20Numbers
             "id": 1,
             "phoneNumber": "+1-4125553000",
             "extension": "3000",
-            "ringPattern": "Long-Long" 
-        }, 
+            "ringPattern": "Long-Long"
+        },
         {
-            "id": 5, 
+            "id": 5,
             "extension": "3005",
             "ringPattern": "Long-Long" 
         }
@@ -5474,6 +5482,7 @@ VoIP Site Auto Attendant
 
 Supported network elements:
 
+* LWS-SOAP
 * BroadWorks Application Server
 
 Keys:
@@ -5953,6 +5962,7 @@ VoIP Site Hunt Group
 
 Supported network elements:
 
+* LWS-SOAP
 * BroadWorks Application Server
 
 Keys:
@@ -6474,6 +6484,7 @@ VoIP Site Call Center
 
 Supported network elements:
 
+* LWS-SOAP
 * BroadWorks Application Server
 
 Keys:
@@ -7047,6 +7058,7 @@ VoIP Site Instant Group Call
 
 Supported network elements:
 
+* LWS-SOAP
 * BroadWorks Application Server
 
 Keys:
@@ -7396,7 +7408,7 @@ POST /instant-group-calls{?mode}
             "firstName": "My IGC"
         },
         "publicServiceIdentity": "5551239876@example.com",
-        "extension": "9876",
+        "extension": "9876"
     },
     "extensions" : {
         "broadworks": {
@@ -8306,8 +8318,13 @@ POST /loki/users{?mode}
 					"type": { "type": "string", "minLength": 1, "maxLength": 40 },
 					"model": { "type": "string", "minLength": 1, "maxLength": 256 },
 					"macAddress": { "type": "string", "minLength": 12, "maxLength": 12, "pattern": "^[0-9A-Fa-f]{12}$" },
-					"linePort": { "type": "string", "minLength": 1, "maxLength": 161 }
+					"linePort": {
+                        "type": "string",
+                        "pattern": "^(\\+|[\\w\\-\\.\\!~\\*\\'\\(\\)])[\\w\\-\\.\\!~\\*\\'\\(\\)]{0,79}(@[a-zA-Z\\d\\.\\-]{1,80})?$",
+                        "minLength": 1,
+                        "maxLength": 161
 						}
+				}
 			},
 			"trunkGroup": {
 				"type": "object",
@@ -8315,8 +8332,13 @@ POST /loki/users{?mode}
 				"description": "Details of the user's trunk group(s), for Trunking users.",
 				"properties": {
 					"name": { "type": "string",	"minLength": 1,	"maxLength": 30 },
-					"linePort": { "type": "string", "minLength": 1, "maxLength": 161 }
+					"linePort": {
+                        "type": "string",
+                        "pattern": "^(\\+|[\\w\\-\\.\\!~\\*\\'\\(\\)])[\\w\\-\\.\\!~\\*\\'\\(\\)]{0,79}(@[a-zA-Z\\d\\.\\-]{1,80})?$",
+                        "minLength": 1,
+                        "maxLength": 161
 					}
+				}
 			},
 			"servicePacks": {
 				"type": "object",
@@ -9985,8 +10007,6 @@ POST /loki/auto-attendants{?mode}
 					}
 				}
 			},
-			"customerId": { "type": "string", "minLength": 1, "required": true },
-			"siteId": { "type": "string", "minLength": 1, "required": true },
 			"autoAttendantId": { "type": "string", "minLength": 1, "maxLength": 161, "required": true },
 			"profile": {
                 "type": "object",
@@ -10167,8 +10187,6 @@ POST /loki/hunt-groups{?mode}
 					}
 				}
 			},
-			"customerId": { "type": "string", "minLength": 1, "required": true },
-			"siteId": { "type": "string", "minLength": 1, "required": true },
 			"huntGroupId": { "type": "string", "minLength": 1, "maxLength": 161, "required": true },
 			"profile": {
                 "type": "object",
@@ -10352,8 +10370,6 @@ POST /loki/call-centers{?mode}
 					}
 				}
 			},
-			"customerId": { "type": "string", "minLength": 1, "required": true },
-			"siteId": { "type": "string", "minLength": 1, "required": true },
 			"callCenterId": { "type": "string", "minLength": 1, "maxLength": 161, "required": true },
 			"profile": {
                 "type": "object",
@@ -10531,8 +10547,6 @@ POST /loki/instant-group-calls{?mode}
 					}
 				}
 			},
-			"customerId": { "type": "string", "minLength": 1, "required": true },
-			"siteId": { "type": "string", "minLength": 1, "required": true },
 			"instantGroupCallId": { "type": "string", "minLength": 1, "maxLength": 161, "required": true },
 			"profile": {
                 "type": "object",
