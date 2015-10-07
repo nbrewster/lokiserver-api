@@ -1,10 +1,10 @@
 FORMAT: 1A
 
-# LWS-REST API
-# This documentation is for LWS-REST GA release (LWS-REST 2.43)
-See also [dev (pre-release) documentation](http://docs.lokidev.apiary.io/)  and [branch (pre-release) documentation](http://docs.lokiserverbranch.apiary.io).
+# LWS-REST API (branch 2.43)
+# This documentation is for LWS-REST API, branch 2.43 (pre-release)
+See also [GA documentation](http://docs.lokiserver.apiary.io/) and [branch (pre-release) documentation](http://docs.lokiserverbranch.apiary.io).
 
-Documentation for the Loki Provisioning LWS-REST API.
+**UNRELEASED** (development edition) Documentation for the Loki Provisioning LWS-REST API.
 
 #General
 
@@ -231,7 +231,7 @@ This applies for ALL LWS-REST requests.<br/>
 1. LWS-REST will not convert BroadWorks callingLineIdPhoneNumber (CLID) into E.164 format when retrieving information from BroadWorks.
 
 ## GET + PUT behaviour
-The client must remove _links and _embedded (and any immutable properties, e.g. userId) from a GET response before submitting it as a PUT request. 
+The client must remove _links and _embedded (and any immutable properties, e.g. userId) from a GET response before submitting it as a PUT request.
 In other words, a PUT only accepts the documented properties (which is not necessarily every property of the corresponding GET response), and the PUT will error if you include additional properties.
 
 ## URI Templates
@@ -4494,7 +4494,7 @@ For the Retrieve list of Users in Site request besides the properties listed in 
                             <td>type</td>
                             <td style="text-align: center; font-weight:bold">no</td>
                             <td>User type<br />
-                                <b>Note</b>: In the initial implementation only the eFax Users will be identified with the ‚Äútype‚Äù property if the 
+                                <b>Note</b>: In the initial implementation only the eFax Users will be identified with the ìtypeî property if the
                                 "Retrieve List of Users in Site (VoIP Entity)" alternate process is enabled.
                             </td>
                         </tr>
@@ -4521,7 +4521,7 @@ For the Retrieve list of Users in Site request besides the properties listed in 
                         <tr>
                             <td>phoneNumberActivated</td>
                             <td style="text-align: center; font-weight:bold">yes</td>
-                            <td>Flag that specifies if the user‚Äôs phone number is activated.</td>
+                            <td>Flag that specifies if the userís phone number is activated.</td>
                         </tr>
                         <tr>
                             <td>email</td>
@@ -4582,7 +4582,7 @@ For the Retrieve list of Users in Site request besides the properties listed in 
                                 "self" : {
                                     "href" : "http://loki3services.apiary.io/loki/users/5003000001@example.com"
                                 }
-                            }, 
+                            },
                             "userId": "5003000001@example.com",
                             "lastName": "Smith",
                             "firstName": "John",
@@ -4592,7 +4592,7 @@ For the Retrieve list of Users in Site request besides the properties listed in 
                             "email": "jsmith@example.com",
                             "extension": "5301",
                             "extensions": {
-                                "broadworks": { 
+                                "broadworks": {
                                     "resourceId": "5003000001@example.com"
                                 }
                             }
@@ -4602,7 +4602,7 @@ For the Retrieve list of Users in Site request besides the properties listed in 
                                 "self" : {
                                     "href" : "http://loki3services.apiary.io/loki/users/5003000002@example.com"
                                 }
-                            }, 
+                            },
                             "userId": "5003000002@example.com",
                             "lastName": "Smith",
                             "firstName": "Johnnie",
@@ -4612,7 +4612,7 @@ For the Retrieve list of Users in Site request besides the properties listed in 
                             "email": "jsmith@example.com",
                             "extension": "5302",
                             "extensions": {
-                                "broadworks": { 
+                                "broadworks": {
                                     "resourceId": "5003000002@example.com"
                                 }
                             }
@@ -4622,7 +4622,7 @@ For the Retrieve list of Users in Site request besides the properties listed in 
                                 "self" : {
                                     "href" : "http://loki3services.apiary.io/loki/users/_efax_5003000003@example.com"
                                 }
-                            }, 
+                            },
                             "userId": "_efax_5003000003@example.com",
                             "type": "eFax",
                             "lastName": "Smith",
@@ -4633,7 +4633,7 @@ For the Retrieve list of Users in Site request besides the properties listed in 
                             "email": "jsmith3@example.com",
                             "extension": "5303",
                             "extensions": {
-                                "broadworks": { 
+                                "broadworks": {
                                     "resourceId": "_efax_5003000003@example.com"
                                 }
                             }
@@ -12112,10 +12112,10 @@ Processes backing the Modify VoIP User request:
         <tr>
             <td>eFax Integrated Modify User via LWS-SOAP (VoIP Entity)</td>
             <td>Alternate process</td>
-            <td>To enable this process the alternate processes need to be enabled and the "Modify User via LWS SOAP (VoIP Entity)" 
+            <td>To enable this process the alternate processes need to be enabled and the "Modify User via LWS SOAP (VoIP Entity)"
             process needs to be disabled.<br />
-            This alternate process is used in the Wit eFax solution component.<br /> 
-            This process will update the primary user, check if the primary user has the Fax Messaging assigned and will update the Wit eFax account‚Äôs email address and/or first name and/or last name if they were changed for the primary user. It will also update the secondary BroadWorks user‚Äôs first name and/or last name if they were changed.<br />
+            This alternate process is used in the Wit eFax solution component.<br />
+            This process will update the primary user, check if the primary user has the Fax Messaging assigned and will update the Wit eFax accountís email address and/or first name and/or last name if they were changed for the primary user. It will also update the secondary BroadWorks userís first name and/or last name if they were changed.<br />
             <b>Note</b>: If the Fax Messaging service is assigned via Service Pack, additional actions will not be triggered.
             </td>
         </tr>
@@ -12647,10 +12647,10 @@ Processes backing the Delete VoIP User request:
         <tr>
             <td>eFax Integrated Delete User (VoIP Entity)</td>
             <td>Alternate process</td>
-            <td>To enable this process the alternate processes need to be enabled and the "Delete User via LWS-SOAP (VoIP Entity)" 
+            <td>To enable this process the alternate processes need to be enabled and the "Delete User via LWS-SOAP (VoIP Entity)"
             process needs to be disabled.<br />
-            This alternate process is used in the Wit eFax solution component.<br /> 
-            Besides deleting the specified user, if the user has Fax Messaging a la carte service assigned, 
+            This alternate process is used in the Wit eFax solution component.<br />
+            Besides deleting the specified user, if the user has Fax Messaging a la carte service assigned,
             it will also perform the additional actions of deleting the eFax User from BroadWorks system and the Wit eFax User from Wit system.<br />
             <b>Note</b>: If the Fax Messaging service is assigned via Service Pack, additional actions will not be triggered.
             </td>
@@ -13536,10 +13536,10 @@ Processes backing the Modify VoIP User's assigned services request:
         <tr>
             <td>eFax Integrated Set User Services (VoIP Entity)</td>
             <td>Alternate process</td>
-            <td>To enable this process the alternate processes need to be enabled and the "Set User Services via LWS-SOAP (VoIP Entity)" 
+            <td>To enable this process the alternate processes need to be enabled and the "Set User Services via LWS-SOAP (VoIP Entity)"
             process needs to be disabled.<br />
-            This alternate process is used in the Wit eFax solution component.<br /> 
-            Besides updating services/service packs assignment status, if the Fax Messaging a la carte service was unassigned, 
+            This alternate process is used in the Wit eFax solution component.<br />
+            Besides updating services/service packs assignment status, if the Fax Messaging a la carte service was unassigned,
             it will also perform the additional actions of deleting the eFax User from BroadWorks system and the Wit eFax User from Wit system.<br />
             <b>Note</b>: If the Fax Messaging service was unassigned via Service Pack unassignment, additional actions will not be triggered.
             </td>
@@ -13678,7 +13678,7 @@ Processes backing the Modify VoIP User's assigned services request:
                 "externalErrorSummary": "[Error 4008] User not found: JohnDoe",
                 "externalErrorDetail": "[Error 4008] User not found: JohnDoe."
             }
-            
+
 + Response 501 (application/json)
     + Headers
 
@@ -13690,7 +13690,7 @@ Processes backing the Modify VoIP User's assigned services request:
                 "errorCode": "NOT_IMPLEMENTED",
                 "summary": "The requested functionality is not implemented.",
                 "detail": "The 'Set User Services' default functionality is not implemented."
-            }            
+            }
 
 ## User's Alternate Numbers Service Settings [/loki/users/{+userId}/services/Alternate%20Numbers]
 ### Modify Alternate Numbers Service Settings [PUT]
@@ -14426,8 +14426,8 @@ Note: See the JSON Schema for data types, format, length restrictions, etc.
                 "externalErrorSummary": "Error modifying user: JohnDoe.",
                 "externalErrorDetail": "User Modify Failed. Intercept User pre-validation error:Error updating service: Intercept User. User [JohnDoe] does not have Intercept User service assigned."
             }
-            
-            
+
+
 ## User's Fax Messaging Service Settings [/loki/users/{+userId}/services/Fax%20Messaging]
 ### Retrieve Fax Messaging Service Settings [GET]
 Retrieve a BroadWorks User's Fax Messaging service settings. <br />
@@ -14538,13 +14538,13 @@ Processes backing the Retrieve User Fax Messaging request:
 </table>
 
 + Response 200 (application/json)
-    
+
     + Headers
-    
+
             Transaction-Id: 1380080943120
-    
+
     + Body
-    
+
             {
                 "_links": {
                     "self": {
@@ -14631,36 +14631,36 @@ Processes backing the Retrieve User Fax Messaging request:
                   "phoneNumber"
                ]
             }
-        
+
 + Response 404 (application/json)
-    
+
     + Headers
 
-            Transaction-Id: 1380080943120    
+            Transaction-Id: 1380080943120
 
     + Body
-    
+
             {
                 "errorCode": "NOT_FOUND",
                 "summary": "The requested resource does not exist",
                 "detail": "The 'Fax Messaging' service is not assigned to the User"
             }
-        
-        
+
+
 + Response 502 (application/json)
-    
+
     + Headers
 
-            Transaction-Id: 1380080943120    
+            Transaction-Id: 1380080943120
 
     + Body
-    
+
             {
                 "errorCode": "EXTERNAL_API_INVALID_STATE",
                 "summary": "External API resource is in an invalid state.",
                 "detail": "The eFax user is in an invalid state (it does not have a phone number)."
             }
-            
+
 ### Modify Fax Messaging Service Settings [PUT]
 Modify BroadWorks User's Fax Messaging service settings. <br />
 Rollback-enabled: Yes (only the alternate process)
@@ -14765,9 +14765,9 @@ Processes backing the Modify User Fax Messaging request:
 </table>
 
 + Request (application/json)
-    
+
     + Body
-    
+
             {
                 "phoneNumber": "+1-2005553001"
             }
@@ -14816,21 +14816,21 @@ Processes backing the Modify User Fax Messaging request:
                   }
                }
             }
-        
+
 + Response 204
-    
+
     + Headers
 
-            Transaction-Id: 1380080943120    
-        
+            Transaction-Id: 1380080943120
+
 + Response 404 (application/json)
-    
+
     + Headers
 
-            Transaction-Id: 1380080943120    
+            Transaction-Id: 1380080943120
 
     + Body
-    
+
             {
                 "errorCode": "NOT_FOUND",
                 "summary": "The server was unable to process your request",
@@ -16982,7 +16982,7 @@ Rollback-enabled: No
                         <td>no</td>
                         <td>n/a</td>
                         <td>Calling line Id last name.<br />
-                            <b>Note:</b> The callingLineId last name will be updated with the name value 
+                            <b>Note:</b> The callingLineId last name will be updated with the name value
                             if the name is present in the request and the callingLineId last name is not.
                         </td>
                     </tr>
@@ -16991,7 +16991,7 @@ Rollback-enabled: No
                         <td>no</td>
                         <td>n/a</td>
                         <td>Calling line Id first name.<br />
-                            <b>Note:</b> The callingLineId first name will be updated with the name value 
+                            <b>Note:</b> The callingLineId first name will be updated with the name value
                             if the name is present in the request and the callingLineId first name is not.
                         </td>
                     </tr>
@@ -17017,7 +17017,7 @@ Rollback-enabled: No
         <td>no</td>
         <td>n/a</td>
         <td>Phone Number add routine to apply.<br />
-        <b>Note:</b> ‚Äúauto‚Äù and ‚Äúno-number‚Äù values will not be implemented in initial release
+        <b>Note:</b> ìautoî and ìno-numberî values will not be implemented in initial release
         </td>
     </tr>
     <tr>
@@ -18782,7 +18782,7 @@ Rollback-enabled: No
                 <td>no</td>
                 <td>n/a</td>
                 <td>Calling line Id last name.<br />
-                    <b>Note:</b> The callingLineId last name will be updated with the name value 
+                    <b>Note:</b> The callingLineId last name will be updated with the name value
                     if the name is present in the request and the callingLineId last name is not.
                 </td>
             </tr>
@@ -18791,7 +18791,7 @@ Rollback-enabled: No
                 <td>no</td>
                 <td>n/a</td>
                 <td>Calling line Id first name.<br />
-                    <b>Note:</b> The callingLineId first name will be updated with the name value 
+                    <b>Note:</b> The callingLineId first name will be updated with the name value
                     if the name is present in the request and the callingLineId first name is not.
                 </td>
             </tr>
@@ -20797,7 +20797,7 @@ Rollback-enabled: No
                 <td>no</td>
                 <td>n/a</td>
                 <td>Calling line Id last name.<br />
-                    <b>Note:</b> The callingLineId last name will be updated with the name value 
+                    <b>Note:</b> The callingLineId last name will be updated with the name value
                     if the name is present in the request and the callingLineId last name is not.
                 </td>
             </tr>
@@ -20806,7 +20806,7 @@ Rollback-enabled: No
                 <td>no</td>
                 <td>n/a</td>
                 <td>Calling line Id first name.<br />
-                    <b>Note:</b> The callingLineId first name will be updated with the name value 
+                    <b>Note:</b> The callingLineId first name will be updated with the name value
                     if the name is present in the request and the callingLineId first name is not.
                 </td>
             </tr>
@@ -22353,7 +22353,7 @@ Rollback-enabled: No
                 <td>no</td>
                 <td>n/a</td>
                 <td>Calling line Id last name.<br />
-                    <b>Note:</b> The callingLineId last name will be updated with the name value 
+                    <b>Note:</b> The callingLineId last name will be updated with the name value
                     if the name is present in the request and the callingLineId last name is not.
                 </td>
             </tr>
@@ -22362,7 +22362,7 @@ Rollback-enabled: No
                 <td>no</td>
                 <td>n/a</td>
                 <td>Calling line Id first name.<br />
-                    <b>Note:</b> The callingLineId first name will be updated with the name value 
+                    <b>Note:</b> The callingLineId first name will be updated with the name value
                     if the name is present in the request and the callingLineId first name is not.
                 </td>
             </tr>
